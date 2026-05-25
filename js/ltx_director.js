@@ -1476,7 +1476,7 @@ class TimelineEditor {
               id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
               start: newStart,
               length: constrainedLength,
-              prompt: "",
+              prompt: this.getDefaultPromptForNewSegment(),
               type: "image",
               imageFile: imageFile,
               imageB64: imgUrl
@@ -3568,12 +3568,26 @@ class TimelineEditor {
     if (this._settingsDismisser) { document.removeEventListener("mousedown", this._settingsDismisser); this._settingsDismisser = null; }
   }
 
+  getDefaultPromptForNewSegment() {
+    const selectedSegment = this.selectionType === "image"
+      ? this.timeline.segments[this.selectedIndex]
+      : null;
+    if (selectedSegment?.prompt?.trim()) return selectedSegment.prompt.trim();
+
+    const globalPromptWidget = this.node.widgets?.find(w => w.name === "global_prompt");
+    if (typeof globalPromptWidget?.value === "string" && globalPromptWidget.value.trim()) {
+      return globalPromptWidget.value.trim();
+    }
+
+    return "";
+  }
+
 
   addSegmentInGap(frameStart, frameEnd, type = "text") {
     const seg = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
       start: frameStart, length: frameEnd - frameStart,
-      prompt: "", type,
+      prompt: this.getDefaultPromptForNewSegment(), type,
     };
     this.timeline.segments.push(seg);
     this.timeline.segments.sort((a, b) => a.start - b.start);
@@ -3597,7 +3611,7 @@ class TimelineEditor {
     const seg = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
       start: newStart, length: Math.min(newLength, Math.max(newLength, durationFrames - newStart)),
-      prompt: "", type: "text",
+      prompt: this.getDefaultPromptForNewSegment(), type: "text",
     };
     this.timeline.segments.push(seg);
     this.timeline.segments.sort((a, b) => a.start - b.start);

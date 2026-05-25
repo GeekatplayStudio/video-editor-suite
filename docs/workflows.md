@@ -2,6 +2,20 @@
 
 ## Included Example Files
 
+### `Geekatplay Video Editor Suite - Overlay Showcase.json`
+
+Purpose:
+Two source clips are loaded, one is layered on top of the other with `GAPLayerComposer`, titles are added with `GAPMotionTextFX`, and the result is exported with `GAPVideoExporter`.
+
+Use this workflow when:
+- You want picture-in-picture, commentary cam, logo bug, or reaction-overlay style edits.
+- You want to test overlay fade timing, audio ducking, and title placement in one file.
+- You want a direct reference for the recommended finishing chain: `GAPLayerComposer -> GAPMotionTextFX -> GAPVideoExporter`.
+
+Requirements:
+- No extra checkpoints, VAEs, or text encoders are required.
+- Source clips can come from `ComfyUI/input` or from direct upload inside `GAPLoadVideoUI`.
+
 ### `Geekatplay Video Editor Suite - Transition Showcase.json`
 
 ![Transition Showcase Preview](assets/transition-showcase.gif)
@@ -50,7 +64,7 @@ Requirements:
 
 ## Bundled LTX Workflow Model Pack
 
-Running `install.bat` installs the model set used by the bundled LTX workflows into the correct ComfyUI folders:
+Running `install.bat` installs the `ComfyUI-KJNodes` dependency plus the model set used by the bundled LTX workflows into the correct ComfyUI folders:
 
 - `models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`
 - `models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`
@@ -65,6 +79,8 @@ Running `install.bat` installs the model set used by the bundled LTX workflows i
 
 That final `loras/ltx2/...` file is created as a workflow-safe alias so the copied workflow JSON files match the files on disk without manual edits.
 
+The copied LTX workflows also use `VAELoaderKJ` from `ComfyUI-KJNodes` and will report a missing node pack if that repo is not present. The installer now clones `https://github.com/kijai/ComfyUI-KJNodes.git` automatically during the LTX setup path.
+
 ## Existing Legacy-Compatible Workflows
 
 The package also keeps the copied LTX workflows from the original suite under `example_workflows/`. Those files were bulk-updated to GAP node IDs and remain useful for timeline-driven LTX generation.
@@ -76,6 +92,6 @@ Each LTX workflow now includes in-canvas FAQ notes with the exact filenames and 
 - `models/loras/` or `models/loras/ltx2/`
 - `models/latent_upscale_models/`
 
-Use `install.bat` when you want those folders populated automatically.
+Use `install.bat` when you want those folders populated automatically and the required `ComfyUI-KJNodes` pack installed alongside them.
 
 The three Geekatplay editor/export demo workflows do not need extra AI model downloads. They operate on source clips loaded from `ComfyUI/input` or uploaded directly through `GAPLoadVideoUI`.

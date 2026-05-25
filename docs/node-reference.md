@@ -189,6 +189,29 @@ Important controls:
 Usage note:
 - Keep both source loaders on the same `frame_rate` for the most predictable result.
 
+### `GAPLayerComposer`
+
+Adds a second timed video layer on top of a base clip with blend modes, placement controls, and mixed audio.
+
+Use it when:
+- You want picture-in-picture, logo bugs, reaction cams, corner overlays, or split editorial builds.
+- You want the overlay clip to fade in and out without baking that timing into the source media.
+- You want base audio to duck automatically while the overlay layer is active.
+
+Important controls:
+- `overlay_start_frame` and `overlay_end_frame` define where the overlay appears. `overlay_end_frame=0` uses the overlay clip's native length.
+- `overlay_scale`, `position`, `margin_x`, and `margin_y` place the second layer inside the base frame.
+- `opacity`, `fade_in_frames`, and `fade_out_frames` shape the visual entrance and exit of the overlay.
+- `blend_mode` supports `normal`, `screen`, `add`, `multiply`, and `overlay`.
+- `playback_mode` controls how the overlay behaves when the requested range is longer than the source overlay clip: `trim`, `loop`, or `hold last`.
+- `extend_output` decides whether the result can grow past the base clip length to keep the overlay visible.
+- `base_audio_gain`, `overlay_audio_gain`, and `audio_ducking` shape the mixed soundtrack.
+
+Usage note:
+- A practical finishing chain is `GAPLayerComposer -> GAPMotionTextFX -> GAPVideoExporter`.
+- The frame controls support long editorial spans up to `100000` frames, matching the rest of the suite's time-based nodes.
+- `hold last` only freezes the overlay picture. Overlay audio stays natural and pads with silence instead of repeating the last audio sample.
+
 ### `GAPMotionTextFX`
 
 Adds text overlays, freeze-frame inserts, and speed ramps.
@@ -209,6 +232,7 @@ Important controls:
 Usage note:
 - Apply overlay text first when you are tuning layout.
 - Add freeze inserts and speed ramps after the text placement is stable, because those operations change clip length.
+- If you need text on top of a video overlay, place `GAPMotionTextFX` after `GAPLayerComposer` so the caption is rendered on the fully composited frame.
 
 ### `GAPVideoExporter`
 

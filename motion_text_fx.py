@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -100,7 +102,24 @@ class GAPMotionTextFX:
 
     @staticmethod
     def _load_font(font_size: int):
-        for font_name in ("arial.ttf", "DejaVuSans.ttf"):
+        windir = os.environ.get("WINDIR", r"C:\Windows")
+        font_candidates = [
+            os.path.join(windir, "Fonts", "arial.ttf"),
+            os.path.join(windir, "Fonts", "segoeui.ttf"),
+            os.path.join(windir, "Fonts", "verdana.ttf"),
+            os.path.join(windir, "Fonts", "tahoma.ttf"),
+            os.path.join(os.path.dirname(Image.__file__), "fonts", "DejaVuSans.ttf"),
+            "arial.ttf",
+            "DejaVuSans.ttf",
+            "LiberationSans-Regular.ttf",
+            "NotoSans-Regular.ttf",
+        ]
+
+        seen = set()
+        for font_name in font_candidates:
+            if font_name in seen:
+                continue
+            seen.add(font_name)
             try:
                 return ImageFont.truetype(font_name, font_size)
             except Exception:
@@ -126,6 +145,9 @@ class GAPMotionTextFX:
 
     @classmethod
     def _overlay_text(cls, frame: torch.Tensor, text: str, font_size: int, position: str, margin_x: int, margin_y: int, text_color: str, box_color: str, box_opacity: float, stroke_color: str, stroke_width: int) -> torch.Tensor:
+        if not str(text or "").strip():
+            return frame
+
         image = (frame.detach().cpu().numpy() * 255.0).round().astype(np.uint8)
         base = Image.fromarray(image, mode="RGB").convert("RGBA")
         overlay = Image.new("RGBA", base.size, (0, 0, 0, 0))

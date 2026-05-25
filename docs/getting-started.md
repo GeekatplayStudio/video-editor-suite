@@ -22,7 +22,7 @@ install.bat --models-only
 
 ## What The Installer Adds
 
-`install.bat` installs the Python dependencies listed in `requirements.txt`, provisions ffmpeg when needed, and places these model files into your ComfyUI `models` folder for the bundled LTX workflows:
+`install.bat` installs the Python dependencies listed in `requirements.txt`, provisions ffmpeg when needed, clones `ComfyUI-KJNodes` into `ComfyUI/custom_nodes`, installs its `requirements.txt` when Python is writable, and places these model files into your ComfyUI `models` folder for the bundled LTX workflows:
 
 - `models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`
 - `models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`
@@ -37,12 +37,15 @@ install.bat --models-only
 
 The last path is created automatically as a workflow-safe alias so the copied LTX workflows open without manual LoRA path edits.
 
+The bundled LTX workflows also expect the `VAELoaderKJ` / `Video VAELoader` node from `ComfyUI-KJNodes`. The installer now clones that repo automatically so those workflows do not open with a missing node-pack error.
+
 ## First Launch Checklist
 
 1. Start ComfyUI after the installer finishes.
 2. Confirm that the `Geekatplay Studio/Video Editor Suite` category appears in the node picker.
 3. Load one of the three editor/export demo workflows first if you want to validate the suite without touching AI models.
 4. Use the bundled LTX workflows after that if you want the timeline-guided generation path.
+5. If you skipped Python package installation because ComfyUI was open, close ComfyUI and rerun `install.bat --deps-only` before opening the LTX workflows.
 
 ## First Workflow To Open
 

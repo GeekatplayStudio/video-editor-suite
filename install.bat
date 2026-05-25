@@ -9,6 +9,7 @@ if not exist "%UserProfile%\OneDrive" set "DEFAULT_DOWNLOAD_ROOT=%UserProfile%\D
 set "COMFY_ROOT=%DEFAULT_COMFY_ROOT%"
 set "MODELS_ROOT="
 set "DOWNLOAD_ROOT=%DEFAULT_DOWNLOAD_ROOT%"
+set "CUSTOM_NODES_ROOT="
 set "PYTHON_EXE="
 set "PYTHON_ARGS="
 set "INSTALL_DEPS=1"
@@ -16,6 +17,7 @@ set "INSTALL_MODELS=1"
 set "INSTALL_FFMPEG=1"
 set "PAUSE_AT_END=1"
 set "SHOW_HELP=0"
+set "DEPS_SKIPPED_BUSY=0"
 
 call :parse_args %*
 if errorlevel 1 goto :fail
@@ -23,9 +25,11 @@ if errorlevel 1 goto :fail
 if "%SHOW_HELP%"=="1" goto :help
 
 if not defined MODELS_ROOT set "MODELS_ROOT=%COMFY_ROOT%\models"
+if not defined CUSTOM_NODES_ROOT set "CUSTOM_NODES_ROOT=%COMFY_ROOT%\custom_nodes"
 
 for %%I in ("%COMFY_ROOT%") do set "COMFY_ROOT=%%~fI"
 for %%I in ("%MODELS_ROOT%") do set "MODELS_ROOT=%%~fI"
+for %%I in ("%CUSTOM_NODES_ROOT%") do set "CUSTOM_NODES_ROOT=%%~fI"
 for %%I in ("%DOWNLOAD_ROOT%") do set "DOWNLOAD_ROOT=%%~fI"
 
 call :ensure_dir "%DOWNLOAD_ROOT%"
@@ -49,6 +53,7 @@ echo.
 echo This installer can set up:
 echo   - Python packages from requirements.txt
 echo   - ffmpeg for workflow and VHS compatibility
+echo   - The required ComfyUI-KJNodes pack for the bundled LTX workflows
 echo   - The bundled LTX workflow model set and workflow-safe aliases
 echo.
 echo Note: the three editor/export demo workflows do not need AI models.
@@ -78,7 +83,13 @@ if "%INSTALL_MODELS%"=="1" (
 )
 
 echo.
-echo Finished.
+if "%DEPS_SKIPPED_BUSY%"=="1" (
+    echo Finished with warnings.
+    echo Python packages were skipped because the selected Python environment is in use.
+    echo Close ComfyUI and rerun install.bat --deps-only to finish installing requirements.
+) else (
+    echo Finished.
+)
 echo Restart ComfyUI before opening workflows.
 goto :done
 
@@ -87,7 +98,7 @@ echo.
 echo Usage: install.bat [options]
 echo.
 echo Default behavior:
-echo   Installs Python dependencies, ffmpeg, and the bundled LTX workflow models.
+echo   Installs Python dependencies, ffmpeg, ComfyUI-KJNodes, and the bundled LTX workflow models.
 echo.
 echo Options:
 echo   --deps-only            Install Python dependencies only.
@@ -251,7 +262,12 @@ exit /b %errorlevel%
 echo.
 echo Installing Python dependencies...
 call :check_python_not_busy
-if errorlevel 1 exit /b 1
+set "BUSY_PYTHON_RESULT=%errorlevel%"
+if "%BUSY_PYTHON_RESULT%"=="2" (
+    set "DEPS_SKIPPED_BUSY=1"
+    exit /b 0
+)
+if not "%BUSY_PYTHON_RESULT%"=="0" exit /b 1
 
 call :run_python -m pip --version
 if errorlevel 1 (
@@ -275,22 +291,10 @@ exit /b 0
 :check_python_not_busy
 if not exist "%PYTHON_EXE%" exit /b 0
 
-set "RUNNING_COUNT="
-for /f %%I in ('powershell -NoProfile -Command "$ErrorActionPreference = ''SilentlyContinue''; $path = [System.IO.Path]::GetFullPath('%PYTHON_EXE%'); @((Get-Process ^| Where-Object { $_.Path -eq $path })).Count"') do set "RUNNING_COUNT=%%I"
+powershell -NoProfile -Command "$ErrorActionPreference = 'SilentlyContinue'; $path = [System.IO.Path]::GetFullPath('%PYTHON_EXE%'); $items = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq $path }); if ($items.Count -eq 0) { exit 0 }; Write-Output 'ERROR: The selected Python executable is already in use:'; Write-Output ('  ' + $path); Write-Output ''; Write-Output 'Active process details:'; $items | ForEach-Object { Write-Output ('  PID: ' + $_.ProcessId); Write-Output ('  Name: ' + $_.Name); Write-Output ('  Command: ' + $_.CommandLine); Write-Output '' }; Write-Output 'Python dependency installation will be skipped for this run.'; Write-Output 'Close ComfyUI or any other process using that Python environment, then run:'; Write-Output '  install.bat --deps-only'; Write-Output ''; Write-Output 'ffmpeg setup and model downloads can continue.'; exit 2"
 
-if not defined RUNNING_COUNT exit /b 0
-if "%RUNNING_COUNT%"=="0" exit /b 0
-
-echo ERROR: The selected Python executable is already in use:
-echo   %PYTHON_EXE%
-echo.
-echo Active process details:
-powershell -NoProfile -Command "$ErrorActionPreference = 'SilentlyContinue'; $path = [System.IO.Path]::GetFullPath('%PYTHON_EXE%'); Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq $path } | ForEach-Object { Write-Output ('  PID: ' + $_.ProcessId); Write-Output ('  Name: ' + $_.Name); Write-Output ('  Command: ' + $_.CommandLine); Write-Output '' }"
-echo.
-echo Close ComfyUI or any other process using that Python environment, then rerun install.bat.
-echo If you only want the bundled LTX model downloads right now, run:
-echo   install.bat --models-only
-exit /b 1
+if errorlevel 2 exit /b 2
+exit /b 0
 
 :ensure_ffmpeg
 echo.
@@ -357,6 +361,11 @@ exit /b 0
 
 :install_models
 echo.
+echo Installing required custom node packs for bundled LTX workflows...
+call :ensure_required_custom_nodes
+if errorlevel 1 exit /b 1
+
+echo.
 echo Downloading bundled LTX workflow models...
 echo This can take a while and needs substantial disk space.
 
@@ -419,6 +428,64 @@ call :verify_exists "%MODELS_ROOT%\loras\ltx2\ltx-2.3-22b-distilled-lora-dynamic
 
 if "%VERIFY_FAILED%"=="1" exit /b 1
 exit /b 0
+
+:ensure_required_custom_nodes
+call :ensure_dir "%CUSTOM_NODES_ROOT%"
+if errorlevel 1 exit /b 1
+
+call :ensure_git
+if errorlevel 1 exit /b 1
+
+set "KJNODES_DIR=%CUSTOM_NODES_ROOT%\ComfyUI-KJNodes"
+
+if exist "%KJNODES_DIR%\.git" (
+    echo Found existing custom node pack:
+    echo   %KJNODES_DIR%
+) else (
+    if exist "%KJNODES_DIR%" (
+        echo ERROR: The required custom node folder already exists but is not a git checkout:
+        echo   %KJNODES_DIR%
+        echo Remove or rename that folder, then rerun install.bat.
+        exit /b 1
+    )
+
+    echo Cloning required custom node pack:
+    echo   https://github.com/kijai/ComfyUI-KJNodes.git
+    git clone --depth 1 https://github.com/kijai/ComfyUI-KJNodes.git "%KJNODES_DIR%"
+    if errorlevel 1 (
+        echo ERROR: Could not clone ComfyUI-KJNodes.
+        exit /b 1
+    )
+)
+
+if "%DEPS_SKIPPED_BUSY%"=="1" (
+    echo Skipping ComfyUI-KJNodes Python dependencies because the selected Python environment is in use.
+    exit /b 0
+)
+
+if "%INSTALL_DEPS%"=="0" (
+    echo Skipping ComfyUI-KJNodes Python dependencies because Python dependency installation is disabled for this run.
+    exit /b 0
+)
+
+if exist "%KJNODES_DIR%\requirements.txt" (
+    echo Installing ComfyUI-KJNodes Python dependencies...
+    call :run_python -m pip install -r "%KJNODES_DIR%\requirements.txt"
+    if errorlevel 1 (
+        echo ERROR: Could not install ComfyUI-KJNodes Python dependencies.
+        exit /b 1
+    )
+)
+
+exit /b 0
+
+:ensure_git
+where git >nul 2>nul
+if not errorlevel 1 exit /b 0
+
+echo ERROR: git was not found on PATH.
+echo Install git, then rerun install.bat so ComfyUI-KJNodes can be cloned automatically.
+exit /b 1
 
 :ensure_alias
 set "SOURCE_FILE=%~1"

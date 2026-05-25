@@ -5,6 +5,7 @@ from .speech_length_calculator import GAPSpeechLengthCalculator
 from .load_audio_ui import GAPLoadAudioUI
 from .load_video_ui import GAPLoadVideoUI
 from .clip_editor import GAPClipEditor
+from .layer_compositor import GAPLayerComposer
 from .video_exporter import GAPVideoExporter
 from .transition_composer import GAPTransitionComposer
 from .motion_text_fx import GAPMotionTextFX
@@ -32,6 +33,7 @@ NODE_CLASS_MAPPINGS = {
     "GAPLoadAudioUI": GAPLoadAudioUI,
     "GAPLoadVideoUI": GAPLoadVideoUI,
     "GAPClipEditor": GAPClipEditor,
+    "GAPLayerComposer": GAPLayerComposer,
     "GAPVideoExporter": GAPVideoExporter,
     "GAPTransitionComposer": GAPTransitionComposer,
     "GAPMotionTextFX": GAPMotionTextFX,
@@ -47,6 +49,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "GAPLoadAudioUI": "Geekatplay Audio Loader",
     "GAPLoadVideoUI": "Geekatplay Video Loader",
     "GAPClipEditor": "Geekatplay Clip Editor",
+    "GAPLayerComposer": "Geekatplay Layer Composer",
     "GAPVideoExporter": "Geekatplay Video Exporter",
     "GAPTransitionComposer": "Geekatplay Transition Composer",
     "GAPMotionTextFX": "Geekatplay Motion Text FX",

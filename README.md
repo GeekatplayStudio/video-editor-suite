@@ -6,7 +6,7 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 
 - Dedicated `GAP*` node IDs for side-by-side installation with the source node pack.
 - Safer branded upload and preview routes for the interactive video loader.
-- Practical video-editing nodes for trimming, retiming, looping, ping-pong playback, transitions, text overlays, freeze holds, speed ramps, and muxed export.
+- Practical video-editing nodes for trimming, retiming, looping, ping-pong playback, layered video compositing, transitions, text overlays, freeze holds, speed ramps, audio ducking, and muxed export.
 - Example workflows that open directly in ComfyUI and give you a starting point for multi-clip edits.
 
 ## One-Click Install
@@ -84,7 +84,7 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 ## Workflow Starting Points
 
 - If you only want editorial tools, start with the three Geekatplay editor/export demo workflows. They do not need checkpoints, VAEs, or text encoders.
-- If you want timeline-driven LTX generation, use the bundled LTX workflows after running `install.bat` so the required models land in the correct folders.
+- If you want timeline-driven LTX generation, use the bundled LTX workflows after running `install.bat` so the required models and `ComfyUI-KJNodes` dependency land in the correct places.
 - The copied LTX workflows still include in-canvas FAQ notes so you can confirm every expected filename directly inside ComfyUI.
 
 ## Documentation
@@ -97,7 +97,7 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 ## Compatibility
 
 - This package is additive and does not replace the original WhatDreamsCost package.
-- The bundled LTX workflows assume your ComfyUI build already includes the LTX-capable nodes those workflows use.
+- The bundled LTX workflows expect the LTX-capable nodes plus `ComfyUI-KJNodes`; `install.bat` now installs that node pack automatically.
 - The custom guide socket type remains `GUIDE_DATA` for workflow compatibility.
 
 ## Repository

@@ -323,16 +323,7 @@ def _encode_relay(model, clip, latent, global_prompt, local_prompts, segment_len
                 "Set the field to an empty string or fix the upstream connection."
             )
 
-    # Split prompts but do NOT filter out empty ones yet, so we can detect them
-    locals_list = [p.strip() for p in local_prompts.split("|")]
-    
-    # Check if any specific segment is empty
-    for p in locals_list:
-        if not p:
-            raise ValueError("There is a segment on the timeline missing a prompt!")
-
-    if not locals_list or (len(locals_list) == 1 and not locals_list[0]):
-        raise ValueError("At least one local prompt is required.")
+    locals_list = _normalize_local_prompts(global_prompt, local_prompts)
 
     arch, patch_size, temporal_stride = detect_model_type(model)
 
@@ -368,6 +359,37 @@ def _encode_relay(model, clip, latent, global_prompt, local_prompts, segment_len
     apply_patches(patched, arch, mask_fn)
 
     return patched, conditioning
+
+
+def _normalize_local_prompts(global_prompt: str, local_prompts: str) -> list[str]:
+    raw_locals = [p.strip() for p in local_prompts.split("|")]
+    if not raw_locals or (len(raw_locals) == 1 and not raw_locals[0]):
+        raise ValueError("At least one local prompt is required.")
+
+    global_fallback = global_prompt.strip()
+    normalized = []
+
+    for idx, prompt in enumerate(raw_locals, start=1):
+        if prompt:
+            normalized.append(prompt)
+            continue
+
+        if global_fallback:
+            normalized.append(global_fallback)
+            log.warning("[PromptRelay] Segment %d was blank; using the global prompt as fallback.", idx)
+            continue
+
+        if normalized:
+            normalized.append(normalized[-1])
+            log.warning("[PromptRelay] Segment %d was blank; reusing the previous segment prompt as fallback.", idx)
+            continue
+
+        raise ValueError(
+            f"Timeline segment {idx} is missing a prompt. "
+            "Add a prompt to that segment or set global_prompt to provide a fallback."
+        )
+
+    return normalized
 
 
 class GAPDirector(io.ComfyNode):

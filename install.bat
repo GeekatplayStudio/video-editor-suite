@@ -283,7 +283,13 @@ if "%RUNNING_COUNT%"=="0" exit /b 0
 
 echo ERROR: The selected Python executable is already in use:
 echo   %PYTHON_EXE%
+echo.
+echo Active process details:
+powershell -NoProfile -Command "$ErrorActionPreference = 'SilentlyContinue'; $path = [System.IO.Path]::GetFullPath('%PYTHON_EXE%'); Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -eq $path } | ForEach-Object { Write-Output ('  PID: ' + $_.ProcessId); Write-Output ('  Name: ' + $_.Name); Write-Output ('  Command: ' + $_.CommandLine); Write-Output '' }"
+echo.
 echo Close ComfyUI or any other process using that Python environment, then rerun install.bat.
+echo If you only want the bundled LTX model downloads right now, run:
+echo   install.bat --models-only
 exit /b 1
 
 :ensure_ffmpeg

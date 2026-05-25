@@ -12,6 +12,10 @@ If you want to start with a multi-clip edit, load:
 
 - `example_workflows/Geekatplay Video Editor Suite - Transition Showcase.json`
 
+If you want the longer transition -> clip edit -> text FX -> export pipeline, load:
+
+- `example_workflows/Geekatplay Video Editor Suite - Full Edit Chain.json`
+
 If you want to start with a single-clip trim and export workflow, load:
 
 - `example_workflows/Geekatplay Video Editor Suite - Clip Editor Export.json`
@@ -31,6 +35,15 @@ If you want to start with a single-clip trim and export workflow, load:
 2. Load one source clip with `GAPLoadVideoUI`.
 3. Adjust `GAPClipEditor` for trim range, playback speed, looping, ping-pong playback, frame blending, and fades.
 4. Queue the workflow to export the edited clip.
+
+## Full Edit Chain Walkthrough
+
+1. Open `Geekatplay Video Editor Suite - Full Edit Chain.json`.
+2. Load the first and second source clips with the two `GAPLoadVideoUI` nodes.
+3. Tune `GAPTransitionComposer` for the transition style and overlap.
+4. Tune `GAPClipEditor` for trim, retime, loop, or fade behavior on the combined clip.
+5. Tune `GAPMotionTextFX` for text overlays, freeze inserts, and speed ramps.
+6. Queue the workflow to export the final composite clip.
 
 ## Notes
 

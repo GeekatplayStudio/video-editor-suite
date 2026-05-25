@@ -38,6 +38,22 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
   Two loaded clips feed `GAPTransitionComposer`, then `GAPMotionTextFX`, then `GAPVideoExporter`.
 - `example_workflows/Geekatplay Video Editor Suite - Clip Editor Export.json`
   A single loaded clip feeds `GAPClipEditor` and then `GAPVideoExporter` for trim, retime, loop, and fade workflows.
+- `example_workflows/Geekatplay Video Editor Suite - Full Edit Chain.json`
+  Two source clips feed `GAPTransitionComposer`, then `GAPClipEditor`, then `GAPMotionTextFX`, then `GAPVideoExporter` for a longer editorial stack.
+
+## Preview GIFs
+
+### Transition Showcase
+
+![Transition Showcase Preview](docs/assets/transition-showcase.gif)
+
+### Clip Editor Export
+
+![Clip Editor Export Preview](docs/assets/clip-editor-export.gif)
+
+### Full Edit Chain
+
+![Full Edit Chain Preview](docs/assets/full-edit-chain.gif)
 
 ## Quick Start
 

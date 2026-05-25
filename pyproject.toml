@@ -1,0 +1,25 @@
+[project]
+name = "comfyui-geekatplay-video-editor-suite"
+description = "Geekatplay Studio video editing, timeline, guide, and clip-shaping nodes for ComfyUI."
+version = "0.1.0"
+license = { file = "LICENSE" }
+dependencies = [
+	"av>=14.4.0",
+	"imageio[ffmpeg]>=2.37.0",
+	"numpy>=2.1.0",
+	"opencv-python-headless>=4.11.0.86",
+	"pillow>=11.2.1",
+	"soundfile>=0.13.1",
+	"typing-extensions>=4.13.0",
+]
+
+[project.urls]
+Repository = "https://github.com/GeekatplayStudio/video-editor-suite"
+Documentation = "https://github.com/GeekatplayStudio/video-editor-suite/tree/main/docs"
+
+[tool.comfy]
+PublisherId = "GeekatplayStudio"
+DisplayName = "Geekatplay Video Editor Suite"
+Icon = ""
+includes = []
+

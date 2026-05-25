@@ -20,6 +20,11 @@ Important controls:
 - `timeline_data`, `local_prompts`, `segment_lengths`, and `guide_strength` are auto-managed by the UI and should normally be left alone.
 - `custom_width`, `custom_height`, `resize_method`, `divisible_by`, and `img_compression` control how image segments are prepared before being injected as guides.
 
+Safety behavior:
+- `GAPDirector` now runs a PromptRelay preflight budget check before generation starts.
+- Oversized video or audio attention masks are blocked early with an error that reports the predicted matrix size and suggests reducing duration, lowering guide resolution, shortening the shot, or disabling audio latents.
+- Large but still allowed jobs emit warnings in the ComfyUI log before mask allocation.
+
 How to use it:
 - Connect the model, CLIP, and any LTX latent path the workflow expects.
 - Build segments directly inside the timeline UI.

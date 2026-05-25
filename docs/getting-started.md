@@ -43,7 +43,7 @@ The bundled LTX workflows also expect the `VAELoaderKJ` / `Video VAELoader` node
 
 1. Start ComfyUI after the installer finishes.
 2. Confirm that the `Geekatplay Studio/Video Editor Suite` category appears in the node picker.
-3. Load one of the three editor/export demo workflows first if you want to validate the suite without touching AI models.
+3. Load one of the four editor/export demo workflows first if you want to validate the suite without touching AI models.
 4. Use the bundled LTX workflows after that if you want the timeline-guided generation path.
 5. If you skipped Python package installation because ComfyUI was open, close ComfyUI and rerun `install.bat --deps-only` before opening the LTX workflows.
 
@@ -53,6 +53,10 @@ If you want to start with a multi-clip edit, load:
 
 - `example_workflows/Geekatplay Video Editor Suite - Transition Showcase.json`
 
+If you want to start with a layered picture-in-picture or overlay edit, load:
+
+- `example_workflows/Geekatplay Video Editor Suite - Overlay Showcase.json`
+
 If you want the longer transition -> clip edit -> text FX -> export pipeline, load:
 
 - `example_workflows/Geekatplay Video Editor Suite - Full Edit Chain.json`
@@ -61,7 +65,17 @@ If you want to start with a single-clip trim and export workflow, load:
 
 - `example_workflows/Geekatplay Video Editor Suite - Clip Editor Export.json`
 
-These three workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAPClipEditor`, `GAPTransitionComposer`, `GAPMotionTextFX`, and `GAPVideoExporter` are all wired correctly. They do not require checkpoints, VAEs, or text encoders.
+These four workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAPClipEditor`, `GAPLayerComposer`, `GAPTransitionComposer`, `GAPMotionTextFX`, and `GAPVideoExporter` are all wired correctly. They do not require checkpoints, VAEs, or text encoders.
+
+## Overlay Showcase Walkthrough
+
+1. Open `Geekatplay Video Editor Suite - Overlay Showcase.json`.
+2. Load the main clip into the left `GAPLoadVideoUI` node.
+3. Load the overlay clip into the right `GAPLoadVideoUI` node.
+4. Tune `GAPLayerComposer` for `overlay_start_frame`, `overlay_end_frame`, `overlay_scale`, `position`, `opacity`, `blend_mode`, and `audio_ducking`.
+5. Use `playback_mode=hold last` for stable picture-in-picture overlays or `loop` when the overlay clip should repeat.
+6. Add the finishing title in `GAPMotionTextFX` after the layer composite so the text sits on top of the final combined frame.
+7. Queue the workflow to export the overlay edit.
 
 ## Recommended First Pass: Clip Editing Only
 
@@ -111,6 +125,12 @@ These three workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAP
 3. Read the in-canvas FAQ note inside that workflow before queueing anything.
 4. Confirm that the loader nodes inside the workflow are pointed at the downloaded checkpoint, text encoders, VAEs, and upscalers.
 5. If you swap in your own files, keep them in the same ComfyUI model folder type so the workflow structure stays valid.
+
+## LTX Timeline Safety Notes
+
+- `GAPDirector` now estimates PromptRelay penalty-matrix size before generation starts.
+- If a timeline job would allocate an oversized video or audio attention mask, the node raises an early error with the estimated matrix size and suggests reducing `duration_frames`, lowering `custom_width` or `custom_height`, shortening the shot, or disconnecting `audio_vae` when audio latents are not required.
+- Large but still allowed jobs log a warning so you can spot risky settings before they become VRAM problems.
 
 ## Notes
 

@@ -5,6 +5,53 @@ import torch
 log = logging.getLogger(__name__)
 
 
+DEFAULT_TEXT_CONTEXT_TOKENS = 1024
+PROMPT_RELAY_SOFT_MAX_ELEMENTS = 120_000_000
+PROMPT_RELAY_HARD_MAX_ELEMENTS = 200_000_000
+PROMPT_RELAY_ESTIMATED_ELEMENT_BYTES = 2
+PROMPT_RELAY_WORKING_SET_FACTOR = 1.5
+
+
+def estimate_penalty_matrix(query_tokens: int, key_tokens: int, label: str) -> dict:
+    query_tokens = max(0, int(query_tokens))
+    key_tokens = max(0, int(key_tokens))
+    elements = query_tokens * key_tokens
+    cache_mib = (elements * PROMPT_RELAY_ESTIMATED_ELEMENT_BYTES) / (1024 * 1024)
+    working_mib = cache_mib * PROMPT_RELAY_WORKING_SET_FACTOR
+    return {
+        "label": label,
+        "query_tokens": query_tokens,
+        "key_tokens": key_tokens,
+        "elements": elements,
+        "cache_mib": cache_mib,
+        "working_mib": working_mib,
+    }
+
+
+def describe_penalty_matrix(analysis: dict) -> str:
+    return (
+        f"{analysis['label']}={analysis['query_tokens']}x{analysis['key_tokens']} "
+        f"({analysis['elements']:,} elements, ~{analysis['cache_mib']:.0f} MiB cache / "
+        f"~{analysis['working_mib']:.0f} MiB working set)"
+    )
+
+
+def enforce_penalty_matrix_budget(label: str, query_tokens: int, key_tokens: int) -> dict:
+    analysis = estimate_penalty_matrix(query_tokens, key_tokens, label)
+    if analysis["elements"] > PROMPT_RELAY_HARD_MAX_ELEMENTS:
+        raise ValueError(
+            "PromptRelay safety check blocked "
+            f"{describe_penalty_matrix(analysis)}. "
+            "Reduce duration_frames, lower custom_width/custom_height, shorten the shot, "
+            "or disable the audio VAE/custom audio path if audio latents are not required."
+        )
+
+    if analysis["elements"] > PROMPT_RELAY_SOFT_MAX_ELEMENTS:
+        log.warning("[PromptRelay] Large penalty matrix predicted: %s", describe_penalty_matrix(analysis))
+
+    return analysis
+
+
 def build_temporal_cost(q_token_idx, Lq, Lk, device, dtype, tokens_per_frame):
     """Gaussian penalty matrix [Lq, Lk] for video cross-attention (integer frame indexing)."""
     offset = torch.zeros(Lq, Lk, device=device, dtype=dtype)
@@ -65,13 +112,14 @@ def create_mask_fn(q_token_idx, fallback_tokens_per_frame, latent_frames):
 
         key = (Lq, Lk, mode, q.device)
         if key not in cache:
+            analysis = enforce_penalty_matrix_budget(mode, Lq, Lk)
             if mode == "video":
                 cost = build_temporal_cost(q_token_idx, Lq, Lk, q.device, q.dtype, video_tpf)
             else:
                 cost = build_temporal_cost_scaled(q_token_idx, Lq, Lk, q.device, q.dtype, latent_frames)
             log.info(
-                "[PromptRelay] Built penalty matrix (%s): Lq=%d, Lk=%d, nonzero=%d/%d",
-                mode, Lq, Lk, (cost > 0).sum().item(), cost.numel(),
+                "[PromptRelay] Built penalty matrix (%s): Lq=%d, Lk=%d, nonzero=%d/%d | ~%.0f MiB cache / ~%.0f MiB working set",
+                mode, Lq, Lk, (cost > 0).sum().item(), cost.numel(), analysis["cache_mib"], analysis["working_mib"],
             )
             cache[key] = -cost
 

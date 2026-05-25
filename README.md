@@ -6,7 +6,7 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 
 - Dedicated `GAP*` node IDs for side-by-side installation with the source node pack.
 - Safer branded upload and preview routes for the interactive video loader.
-- Practical video-editing nodes for trimming, retiming, looping, ping-pong playback, layered video compositing, transitions, text overlays, freeze holds, speed ramps, audio ducking, and muxed export.
+- Practical video-editing nodes for trimming, retiming, looping, ping-pong playback, layered video compositing, transitions, text overlays, freeze holds, speed ramps, audio ducking, muxed export, and LTX timeline safety checks.
 - Example workflows that open directly in ComfyUI and give you a starting point for multi-clip edits.
 
 ## One-Click Install
@@ -54,12 +54,15 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 ### Editing And Export
 
 - `GAPClipEditor`: trim, reverse, loop, ping-pong, retime, frame blend, fades, and audio gain.
+- `GAPLayerComposer`: timed video-on-video overlays with blend modes, fades, and audio ducking.
 - `GAPTransitionComposer`: crossfades, wipes, slides, hold frames, and audio crossfades between clips.
 - `GAPMotionTextFX`: text overlays, freeze inserts, and speed ramps.
 - `GAPVideoExporter`: container, codec, preset, bitrate, and audio mux controls.
 
 ## Example Workflows
 
+- `example_workflows/Geekatplay Video Editor Suite - Overlay Showcase.json`
+  A base clip feeds `GAPLayerComposer`, then `GAPMotionTextFX`, then `GAPVideoExporter` for picture-in-picture and overlay-style edits.
 - `example_workflows/Geekatplay Video Editor Suite - Transition Showcase.json`
   Two loaded clips feed `GAPTransitionComposer`, then `GAPMotionTextFX`, then `GAPVideoExporter`.
 - `example_workflows/Geekatplay Video Editor Suite - Clip Editor Export.json`
@@ -83,9 +86,10 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 
 ## Workflow Starting Points
 
-- If you only want editorial tools, start with the three Geekatplay editor/export demo workflows. They do not need checkpoints, VAEs, or text encoders.
+- If you only want editorial tools, start with the four Geekatplay editor/export demo workflows. They do not need checkpoints, VAEs, or text encoders.
 - If you want timeline-driven LTX generation, use the bundled LTX workflows after running `install.bat` so the required models and `ComfyUI-KJNodes` dependency land in the correct places.
 - The copied LTX workflows still include in-canvas FAQ notes so you can confirm every expected filename directly inside ComfyUI.
+- `GAPDirector` now runs a PromptRelay preflight safety check before large timeline jobs so oversized video or audio attention masks fail early with guidance instead of trying to allocate huge penalty matrices.
 
 ## Documentation
 
@@ -99,6 +103,7 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 - This package is additive and does not replace the original WhatDreamsCost package.
 - The bundled LTX workflows expect the LTX-capable nodes plus `ComfyUI-KJNodes`; `install.bat` now installs that node pack automatically.
 - The custom guide socket type remains `GUIDE_DATA` for workflow compatibility.
+- PromptRelay safety guards now block oversized video/audio attention masks before expensive allocation and report the estimated matrix size in the error.
 
 ## Repository
 

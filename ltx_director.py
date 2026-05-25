@@ -16,6 +16,10 @@ import comfy.model_management
 from comfy_api.latest import io
 
 from .prompt_relay import (
+    DEFAULT_TEXT_CONTEXT_TOKENS,
+    describe_penalty_matrix,
+    enforce_penalty_matrix_budget,
+    estimate_penalty_matrix,
     get_raw_tokenizer,
     map_token_indices,
     build_segments,
@@ -311,7 +315,7 @@ def _convert_to_latent_lengths(pixel_lengths, temporal_stride, latent_frames):
     return result
 
 
-def _encode_relay(model, clip, latent, global_prompt, local_prompts, segment_lengths, epsilon):
+def _encode_relay(model, clip, latent, global_prompt, local_prompts, segment_lengths, epsilon, audio_query_tokens=None):
     for name, val in (("global_prompt", global_prompt),
                       ("local_prompts", local_prompts),
                       ("segment_lengths", segment_lengths)):
@@ -338,6 +342,7 @@ def _encode_relay(model, clip, latent, global_prompt, local_prompts, segment_len
 
     raw_tokenizer = get_raw_tokenizer(clip)
     full_prompt, token_ranges = map_token_indices(raw_tokenizer, global_prompt, locals_list)
+    _preflight_prompt_relay_budget(raw_tokenizer, token_ranges, latent_frames, tokens_per_frame, audio_query_tokens)
 
     log.info("[PromptRelay] Global: tokens [0:%d] (%d tokens)", token_ranges[0][0], token_ranges[0][0])
     for i, (s, e) in enumerate(token_ranges):
@@ -390,6 +395,48 @@ def _normalize_local_prompts(global_prompt: str, local_prompts: str) -> list[str
         )
 
     return normalized
+
+
+def _estimate_text_context_tokens(raw_tokenizer, token_ranges) -> int:
+    explicit_tokens = max((end for _, end in token_ranges), default=0)
+    model_max_length = getattr(raw_tokenizer, "model_max_length", 0)
+    if not isinstance(model_max_length, int) or model_max_length <= 0 or model_max_length > 8192:
+        model_max_length = DEFAULT_TEXT_CONTEXT_TOKENS
+    return max(DEFAULT_TEXT_CONTEXT_TOKENS, model_max_length, explicit_tokens)
+
+
+def _estimate_audio_query_tokens(audio_vae, pixel_frames: int, frame_rate: float) -> int | None:
+    if audio_vae is None:
+        return None
+
+    try:
+        inner = getattr(audio_vae, "first_stage_model", audio_vae)
+        audio_freq = int(getattr(inner, "latent_frequency_bins", 0))
+        num_audio_latents = int(inner.num_of_latents_from_frames(pixel_frames, float(frame_rate)))
+        if audio_freq <= 0 or num_audio_latents <= 0:
+            return None
+        return audio_freq * num_audio_latents
+    except Exception as exc:
+        log.warning("[PromptRelay] Could not estimate audio penalty budget: %s", exc)
+        return None
+
+
+def _preflight_prompt_relay_budget(raw_tokenizer, token_ranges, latent_frames: int, tokens_per_frame: int, audio_query_tokens: int | None = None):
+    text_context_tokens = _estimate_text_context_tokens(raw_tokenizer, token_ranges)
+    analyses = [
+        estimate_penalty_matrix(latent_frames * tokens_per_frame, text_context_tokens, "video"),
+    ]
+    if audio_query_tokens is not None and audio_query_tokens > 0:
+        analyses.append(estimate_penalty_matrix(audio_query_tokens, text_context_tokens, "audio/scaled"))
+
+    log.info(
+        "[PromptRelay] Preflight penalty budget: text_keys=%d | %s",
+        text_context_tokens,
+        " | ".join(describe_penalty_matrix(analysis) for analysis in analyses),
+    )
+
+    for analysis in analyses:
+        enforce_penalty_matrix_budget(analysis["label"], analysis["query_tokens"], analysis["key_tokens"])
 
 
 class GAPDirector(io.ComfyNode):
@@ -593,8 +640,10 @@ class GAPDirector(io.ComfyNode):
         else:
             latent = optional_latent
 
+        audio_query_tokens = _estimate_audio_query_tokens(audio_vae, ltxv_length, float(frame_rate))
+
         patched, conditioning = _encode_relay(
-            model, clip, latent, global_prompt, local_prompts, segment_lengths, epsilon,
+            model, clip, latent, global_prompt, local_prompts, segment_lengths, epsilon, audio_query_tokens,
         )
 
         # --- Build Audio Output ---

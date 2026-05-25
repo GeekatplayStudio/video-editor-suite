@@ -81,6 +81,8 @@ That final `loras/ltx2/...` file is created as a workflow-safe alias so the copi
 
 The copied LTX workflows also use `VAELoaderKJ` from `ComfyUI-KJNodes` and will report a missing node pack if that repo is not present. The installer now clones `https://github.com/kijai/ComfyUI-KJNodes.git` automatically during the LTX setup path.
 
+The timeline-driven LTX nodes now also run a PromptRelay safety preflight. If an edit would allocate an oversized video or audio attention mask, the workflow stops early with a matrix-size estimate and tuning guidance instead of failing later after heavy model staging.
+
 ## Existing Legacy-Compatible Workflows
 
 The package also keeps the copied LTX workflows from the original suite under `example_workflows/`. Those files were bulk-updated to GAP node IDs and remain useful for timeline-driven LTX generation.

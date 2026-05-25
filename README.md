@@ -9,6 +9,32 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 - Practical video-editing nodes for trimming, retiming, looping, ping-pong playback, transitions, text overlays, freeze holds, speed ramps, and muxed export.
 - Example workflows that open directly in ComfyUI and give you a starting point for multi-clip edits.
 
+## One-Click Install
+
+1. Place `ComfyUI-Geekatplay-VideoEditorSuite` inside `ComfyUI/custom_nodes`.
+2. Double-click `install.bat` from the package folder.
+3. Wait for dependency installation, ffmpeg setup, and model downloads to finish.
+4. Restart ComfyUI.
+
+### What `install.bat` does
+
+- Installs the Python requirements from `requirements.txt` into your ComfyUI Python environment.
+- Downloads an ffmpeg build into the ComfyUI root if ffmpeg is not already available.
+- Sets `VHS_FORCE_FFMPEG_PATH` and `IMAGEIO_FFMPEG_EXE` for future runs.
+- Downloads the bundled LTX workflow model set into `ComfyUI/models`.
+- Creates the workflow-compatible LoRA alias at `models/loras/ltx2/ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors`.
+
+### Optional Installer Modes
+
+- `install.bat --deps-only`
+  Install only Python requirements.
+- `install.bat --models-only`
+  Download only the bundled LTX workflow models.
+- `install.bat --skip-ffmpeg`
+  Skip ffmpeg setup if you already manage it yourself.
+- `install.bat --no-pause`
+  Useful when running from an existing terminal.
+
 ## Node Groups
 
 ### Timeline And Guide Tools
@@ -55,13 +81,11 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 
 ![Full Edit Chain Preview](docs/assets/full-edit-chain.gif)
 
-## Quick Start
+## Workflow Starting Points
 
-1. Place `ComfyUI-Geekatplay-VideoEditorSuite` inside `ComfyUI/custom_nodes`.
-2. Install dependencies from `requirements.txt` or let ComfyUI Manager process `pyproject.toml`.
-3. Restart ComfyUI.
-4. Load one of the example workflows from the `example_workflows` folder.
-5. Replace the empty `GAPLoadVideoUI` inputs with your own source clips and queue the workflow.
+- If you only want editorial tools, start with the three Geekatplay editor/export demo workflows. They do not need checkpoints, VAEs, or text encoders.
+- If you want timeline-driven LTX generation, use the bundled LTX workflows after running `install.bat` so the required models land in the correct folders.
+- The copied LTX workflows still include in-canvas FAQ notes so you can confirm every expected filename directly inside ComfyUI.
 
 ## Documentation
 
@@ -73,7 +97,7 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 ## Compatibility
 
 - This package is additive and does not replace the original WhatDreamsCost package.
-- The copied LTX and timeline workflows still expect the broader ComfyUI and LTX ecosystem used by the source package.
+- The bundled LTX workflows assume your ComfyUI build already includes the LTX-capable nodes those workflows use.
 - The custom guide socket type remains `GUIDE_DATA` for workflow compatibility.
 
 ## Repository

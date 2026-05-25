@@ -23,7 +23,7 @@
       "title": "Geekatplay Full Edit Chain",
       "properties": {},
       "widgets_values": [
-        "1. Load two source clips with GAPLoadVideoUI.\n2. Blend them with GAPTransitionComposer.\n3. Use GAPClipEditor to trim, retime, or loop the combined sequence.\n4. Add titles or freeze inserts with GAPMotionTextFX.\n5. Export the final result with GAPVideoExporter."
+        "1. Load two source clips with GAPLoadVideoUI.\n2. Blend them with GAPTransitionComposer.\n3. Use GAPClipEditor to trim, retime, or loop the combined sequence.\n4. Add titles or freeze inserts with GAPMotionTextFX.\n5. Export the final result with GAPVideoExporter.\n6. No extra checkpoints, VAEs, or text encoders are required for this workflow. Put source videos in ComfyUI/input or upload them directly in GAPLoadVideoUI."
       ],
       "color": "#223",
       "bgcolor": "#335"

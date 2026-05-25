@@ -23,7 +23,7 @@
       "title": "Geekatplay Clip Editor Export",
       "properties": {},
       "widgets_values": [
-        "1. Load a source clip with GAPLoadVideoUI.\n2. Use GAPClipEditor to trim, retime, loop, ping-pong, and fade the clip.\n3. Queue the workflow to export the edited result to ComfyUI/output/Geekatplay/VideoEditorSuite."
+        "1. Load a source clip with GAPLoadVideoUI.\n2. Use GAPClipEditor to trim, retime, loop, ping-pong, and fade the clip.\n3. Queue the workflow to export the edited result to ComfyUI/output/Geekatplay/VideoEditorSuite.\n4. No extra checkpoints, VAEs, or text encoders are required for this workflow. Put source videos in ComfyUI/input or upload them directly in GAPLoadVideoUI."
       ],
       "color": "#223",
       "bgcolor": "#335"

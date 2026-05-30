@@ -8,6 +8,12 @@ log = logging.getLogger(__name__)
 DEFAULT_TEXT_CONTEXT_TOKENS = 1024
 PROMPT_RELAY_SOFT_MAX_ELEMENTS = 120_000_000
 PROMPT_RELAY_HARD_MAX_ELEMENTS = 200_000_000
+PROMPT_RELAY_SOFT_MAX_WORKING_MIB = 320
+PROMPT_RELAY_HARD_MAX_WORKING_MIB = 384
+PROMPT_RELAY_SCALED_SOFT_MAX_ELEMENTS = 100_000_000
+PROMPT_RELAY_SCALED_HARD_MAX_ELEMENTS = 120_000_000
+PROMPT_RELAY_SCALED_SOFT_MAX_WORKING_MIB = 256
+PROMPT_RELAY_SCALED_HARD_MAX_WORKING_MIB = 320
 PROMPT_RELAY_ESTIMATED_ELEMENT_BYTES = 2
 PROMPT_RELAY_WORKING_SET_FACTOR = 1.5
 
@@ -36,17 +42,54 @@ def describe_penalty_matrix(analysis: dict) -> str:
     )
 
 
+def get_penalty_matrix_budget(label: str) -> dict:
+    scaled = "scaled" in str(label).lower()
+    if scaled:
+        return {
+            "soft_elements": PROMPT_RELAY_SCALED_SOFT_MAX_ELEMENTS,
+            "hard_elements": PROMPT_RELAY_SCALED_HARD_MAX_ELEMENTS,
+            "soft_working_mib": PROMPT_RELAY_SCALED_SOFT_MAX_WORKING_MIB,
+            "hard_working_mib": PROMPT_RELAY_SCALED_HARD_MAX_WORKING_MIB,
+        }
+
+    return {
+        "soft_elements": PROMPT_RELAY_SOFT_MAX_ELEMENTS,
+        "hard_elements": PROMPT_RELAY_HARD_MAX_ELEMENTS,
+        "soft_working_mib": PROMPT_RELAY_SOFT_MAX_WORKING_MIB,
+        "hard_working_mib": PROMPT_RELAY_HARD_MAX_WORKING_MIB,
+    }
+
+
+def get_penalty_matrix_remediation(label: str) -> str:
+    advice = [
+        "Reduce duration_frames",
+        "lower custom_width/custom_height",
+        "shorten the shot",
+    ]
+    if "audio" in str(label).lower():
+        advice.append("disconnect/disable the audio VAE-custom audio path if audio latents are not required")
+    return ", ".join(advice[:-1]) + f", or {advice[-1]}."
+
+
 def enforce_penalty_matrix_budget(label: str, query_tokens: int, key_tokens: int) -> dict:
     analysis = estimate_penalty_matrix(query_tokens, key_tokens, label)
-    if analysis["elements"] > PROMPT_RELAY_HARD_MAX_ELEMENTS:
+    budget = get_penalty_matrix_budget(label)
+    over_hard_limit = (
+        analysis["elements"] > budget["hard_elements"]
+        or analysis["working_mib"] > budget["hard_working_mib"]
+    )
+    if over_hard_limit:
         raise ValueError(
             "PromptRelay safety check blocked "
             f"{describe_penalty_matrix(analysis)}. "
-            "Reduce duration_frames, lower custom_width/custom_height, shorten the shot, "
-            "or disable the audio VAE/custom audio path if audio latents are not required."
+            f"{get_penalty_matrix_remediation(label)}"
         )
 
-    if analysis["elements"] > PROMPT_RELAY_SOFT_MAX_ELEMENTS:
+    over_soft_limit = (
+        analysis["elements"] > budget["soft_elements"]
+        or analysis["working_mib"] > budget["soft_working_mib"]
+    )
+    if over_soft_limit:
         log.warning("[PromptRelay] Large penalty matrix predicted: %s", describe_penalty_matrix(analysis))
 
     return analysis

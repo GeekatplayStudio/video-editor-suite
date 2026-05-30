@@ -162,7 +162,7 @@ The current fork already exposes most of the practical LTX 2.3 workflow surface:
 - This package is additive and does not replace the original WhatDreamsCost package.
 - The bundled LTX workflows expect the LTX-capable nodes plus `ComfyUI-KJNodes`; `install.bat` now installs that node pack automatically.
 - The custom guide socket type remains `GUIDE_DATA` for workflow compatibility.
-- PromptRelay safety guards now block oversized video/audio attention masks before expensive allocation and report the estimated matrix size in the error.
+- PromptRelay safety guards now block oversized video and scaled-audio attention masks before expensive allocation and report the estimated matrix size in the error.
 
 ## Repository
 

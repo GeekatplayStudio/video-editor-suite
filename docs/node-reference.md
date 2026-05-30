@@ -22,7 +22,7 @@ Important controls:
 
 Safety behavior:
 - `GAPDirector` now runs a PromptRelay preflight budget check before generation starts.
-- Oversized video or audio attention masks are blocked early with an error that reports the predicted matrix size and suggests reducing duration, lowering guide resolution, shortening the shot, or disabling audio latents.
+- Oversized video or scaled-audio attention masks are blocked early with an error that reports the predicted matrix size and suggests reducing duration, lowering guide resolution, shortening the shot, or disconnecting the audio VAE when audio latents are not needed.
 - Large but still allowed jobs emit warnings in the ComfyUI log before mask allocation.
 
 How to use it:

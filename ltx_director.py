@@ -33,6 +33,7 @@ log = logging.getLogger(__name__)
 
 # Keep the original socket identifier so copied workflows stay connected.
 GuideData = io.Custom("GUIDE_DATA")
+LTX_PROMPT_RELAY_SCALED_FRAME_PAD = 2
 
 
 def _load_image_tensor(seg: dict) -> torch.Tensor:
@@ -342,7 +343,7 @@ def _encode_relay(model, clip, latent, global_prompt, local_prompts, segment_len
 
     raw_tokenizer = get_raw_tokenizer(clip)
     full_prompt, token_ranges = map_token_indices(raw_tokenizer, global_prompt, locals_list)
-    _preflight_prompt_relay_budget(raw_tokenizer, token_ranges, latent_frames, tokens_per_frame, audio_query_tokens)
+    _preflight_prompt_relay_budget(raw_tokenizer, token_ranges, latent_frames, tokens_per_frame, audio_query_tokens, arch)
 
     log.info("[PromptRelay] Global: tokens [0:%d] (%d tokens)", token_ranges[0][0], token_ranges[0][0])
     for i, (s, e) in enumerate(token_ranges):
@@ -421,11 +422,22 @@ def _estimate_audio_query_tokens(audio_vae, pixel_frames: int, frame_rate: float
         return None
 
 
-def _preflight_prompt_relay_budget(raw_tokenizer, token_ranges, latent_frames: int, tokens_per_frame: int, audio_query_tokens: int | None = None):
+def _estimate_ltx_scaled_video_query_tokens(latent_frames: int, tokens_per_frame: int) -> int:
+    # LTXAV can hit a scaled cross-attention path that is two latent frames longer
+    # than the plain video query estimate, so budget that worst case up front.
+    return max(latent_frames + LTX_PROMPT_RELAY_SCALED_FRAME_PAD, 0) * max(tokens_per_frame, 0)
+
+
+def _preflight_prompt_relay_budget(raw_tokenizer, token_ranges, latent_frames: int, tokens_per_frame: int, audio_query_tokens: int | None = None, arch: str | None = None):
     text_context_tokens = _estimate_text_context_tokens(raw_tokenizer, token_ranges)
+    video_query_tokens = latent_frames * tokens_per_frame
     analyses = [
-        estimate_penalty_matrix(latent_frames * tokens_per_frame, text_context_tokens, "video"),
+        estimate_penalty_matrix(video_query_tokens, text_context_tokens, "video"),
     ]
+    if arch == "ltx":
+        scaled_video_query_tokens = _estimate_ltx_scaled_video_query_tokens(latent_frames, tokens_per_frame)
+        if scaled_video_query_tokens > video_query_tokens:
+            analyses.append(estimate_penalty_matrix(scaled_video_query_tokens, text_context_tokens, "video/scaled-padded"))
     if audio_query_tokens is not None and audio_query_tokens > 0:
         analyses.append(estimate_penalty_matrix(audio_query_tokens, text_context_tokens, "audio/scaled"))
 

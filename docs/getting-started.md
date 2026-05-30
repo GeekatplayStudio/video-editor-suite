@@ -132,7 +132,7 @@ These four workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAPC
 
 ## Choose The Right LTX Starting Workflow
 
-1. Open `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` when you want the broadest single-canvas LTX entry point with Director, first/last-frame, custom-audio, and V2V guidance notes on one canvas.
+1. Open `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` when you want the compatibility-safe expanded Director canvas plus an in-canvas map to the companion LTX workflows.
 2. Open `LTX Director Example Workflow (Fixed).json` when you want the smaller Director-only canvas for text-to-video with timeline edits, prompt segments, and guide-image timing.
 3. Open `LTX I2V First Last Frame 2 Stage Workflow v6.json` or `LTX I2V First Last Frame 3 Stage Workflow v6.json` when you want a dedicated image-to-video, first/last-frame, or sparse multi-keyframe canvas.
 4. Open `LTX I2V FFLF Custom Audio Workflow - SUPPORTS LATEST COMFYUI VERSION - V3.json` when you want the standalone bundled custom-audio or audio-driven path.
@@ -140,10 +140,10 @@ These four workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAPC
 
 ## Video-To-Video With Existing Nodes
 
-1. Open `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`.
-2. Load and trim the reference clip in the V2V helper `GAPLoadVideoUI` node.
-3. Feed that node's `IMAGE` output into the right-lane `GAPSequencer` `multi_input` pin when you want video guidance instead of stills.
-4. Use frame placement and guide strength settings to decide whether the clip behaves like sparse guide frames or denser motion guidance.
+1. Open one of the guide-based first/last-frame workflows.
+2. Add `GAPLoadVideoUI` if you want to use a reference clip instead of still images.
+3. Load and trim the reference clip there.
+4. Feed that node's `IMAGE` output into `GAPSequencer` `multi_input` and use frame placement plus guide strength settings to decide whether the clip behaves like sparse guide frames or denser motion guidance.
 
 This repo does not ship a separate V2V-only workflow file because the stable path is already covered by `GAPLoadVideoUI` plus the existing guide-based LTX workflows.
 

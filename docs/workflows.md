@@ -65,16 +65,16 @@ Requirements:
 ### `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`
 
 Purpose:
-Places the validated LTX Director lane beside the first/last-frame plus custom-audio lane on one canvas, then adds a V2V helper loader and handoff notes for the optional lip-sync stage.
+Keeps the fully expanded `LTX Director Example Workflow (Fixed)` canvas under a Geekatplay entry-point filename, then adds a hub note that points to the companion first/last-frame, custom-audio, and lip-sync workflows.
 
 Use this workflow when:
-- You want one bundled canvas that covers text-to-video, timeline-guided image-to-video, first/last-frame, and custom-audio entry points without opening multiple files.
-- You want the recommended V2V starting point visible on the same canvas as the guide-based LTX lane.
-- You want a stable handoff point from generation into the optional lip-sync bridge workflow.
+- You want the expanded Director workflow without the newer UUID-style core wrapper nodes used by the subgraph-based canvases.
+- You want a compatibility-safe starting point for text-to-video and timeline prompt work.
+- You want an in-canvas map that tells you which companion workflow to open next for first/last-frame, custom-audio, or lip-sync work.
 
 Requirements:
 - Run `install.bat` first so the bundled LTX model pack and `ComfyUI-KJNodes` dependency are present.
-- Keep the left Director lane and the right FFLF lane separate unless you intentionally rewire them.
+- This workflow intentionally stays on the expanded Director canvas instead of embedding the newer subgraph-based first/last-frame lane.
 
 ### `Geekatplay Video Editor Suite - LipSync GAP Bridge.json`
 
@@ -115,13 +115,13 @@ The timeline-driven LTX nodes now also run a PromptRelay safety preflight. If an
 Use the bundled LTX workflows based on the job you are actually trying to run:
 
 - Text to video:
-	Start with `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` when you want the broadest single-canvas entry point, or `LTX Director Example Workflow (Fixed).json` when you want the smaller Director-only canvas.
+	Start with `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` when you want the compatibility-safe Director hub, or `LTX Director Example Workflow (Fixed).json` when you want the original fixed canvas directly.
 - Image to video:
-	Use the Director Lab right lane or `LTX I2V First Last Frame 2 Stage Workflow v6.json` or `LTX I2V First Last Frame 3 Stage Workflow v6.json` when one or more guide frames should shape the shot.
+	Use `LTX I2V First Last Frame 2 Stage Workflow v6.json` or `LTX I2V First Last Frame 3 Stage Workflow v6.json` when one or more guide frames should shape the shot.
 - First frame, last frame, or sparse keyframes:
-	Use the same `LTX I2V First Last Frame` workflows or the Director Lab right lane and drive guide placement with `GAPSequencer`.
+	Use the same `LTX I2V First Last Frame` workflows and drive guide placement with `GAPSequencer`.
 - Custom audio or audio-driven shots:
-	Use the Director Lab right lane or `LTX I2V FFLF Custom Audio Workflow - SUPPORTS LATEST COMFYUI VERSION - V3.json` when you want a bundled example that already exposes `GAPLoadAudioUI` and the custom-audio switch.
+	Use `LTX I2V FFLF Custom Audio Workflow - SUPPORTS LATEST COMFYUI VERSION - V3.json` when you want a bundled example that already exposes `GAPLoadAudioUI` and the custom-audio switch.
 - Exact lip-sync post pass:
 	Use `Geekatplay Video Editor Suite - LipSync GAP Bridge.json` after installing `GeekatplayStudio/ComfyUI-LipSync-GAP`.
 - Editorial finishing after generation:

@@ -460,86 +460,86 @@
     }
   ],
   "links": [
-    {
-      "id": 1,
-      "origin_id": 2,
-      "origin_slot": 0,
-      "target_id": 4,
-      "target_slot": 0,
-      "type": "IMAGE"
-    },
-    {
-      "id": 2,
-      "origin_id": 3,
-      "origin_slot": 0,
-      "target_id": 4,
-      "target_slot": 1,
-      "type": "IMAGE"
-    },
-    {
-      "id": 3,
-      "origin_id": 2,
-      "origin_slot": 1,
-      "target_id": 4,
-      "target_slot": 2,
-      "type": "AUDIO"
-    },
-    {
-      "id": 4,
-      "origin_id": 3,
-      "origin_slot": 1,
-      "target_id": 4,
-      "target_slot": 3,
-      "type": "AUDIO"
-    },
-    {
-      "id": 5,
-      "origin_id": 4,
-      "origin_slot": 0,
-      "target_id": 5,
-      "target_slot": 0,
-      "type": "IMAGE"
-    },
-    {
-      "id": 6,
-      "origin_id": 4,
-      "origin_slot": 1,
-      "target_id": 5,
-      "target_slot": 1,
-      "type": "AUDIO"
-    },
-    {
-      "id": 7,
-      "origin_id": 5,
-      "origin_slot": 0,
-      "target_id": 6,
-      "target_slot": 0,
-      "type": "IMAGE"
-    },
-    {
-      "id": 8,
-      "origin_id": 5,
-      "origin_slot": 1,
-      "target_id": 6,
-      "target_slot": 1,
-      "type": "AUDIO"
-    },
-    {
-      "id": 9,
-      "origin_id": 6,
-      "origin_slot": 0,
-      "target_id": 7,
-      "target_slot": 0,
-      "type": "IMAGE"
-    },
-    {
-      "id": 10,
-      "origin_id": 6,
-      "origin_slot": 1,
-      "target_id": 7,
-      "target_slot": 1,
-      "type": "AUDIO"
-    }
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      1,
+      4,
+      2,
+      "AUDIO"
+    ],
+    [
+      4,
+      3,
+      1,
+      4,
+      3,
+      "AUDIO"
+    ],
+    [
+      5,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      4,
+      1,
+      5,
+      1,
+      "AUDIO"
+    ],
+    [
+      7,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      5,
+      1,
+      6,
+      1,
+      "AUDIO"
+    ],
+    [
+      9,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      6,
+      1,
+      7,
+      1,
+      "AUDIO"
+    ]
   ],
   "groups": [],
   "config": {},

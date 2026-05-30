@@ -1,4 +1,4 @@
-{
+﻿{
   "id": "64b81755-dd7d-4e01-9e14-9b2ad6ab4341",
   "revision": 0,
   "last_node_id": 92,
@@ -1027,8 +1027,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "whatdreamscost-comfyui",
-        "ver": "5cae3c00186ff2eb79771070f05a2c4e02f329bb",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPDirectorGuide",
         "aux_id": "kijai/ComfyUI-PromptRelay"
       },
@@ -1225,8 +1225,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "whatdreamscost-comfyui",
-        "ver": "5cae3c00186ff2eb79771070f05a2c4e02f329bb",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPDirectorGuide",
         "aux_id": "kijai/ComfyUI-PromptRelay"
       },
@@ -1435,8 +1435,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "whatdreamscost-comfyui",
-        "ver": "5cae3c00186ff2eb79771070f05a2c4e02f329bb",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPDirector",
         "aux_id": "kijai/ComfyUI-PromptRelay"
       },
@@ -1730,7 +1730,7 @@
       "title": "FAQ",
       "properties": {},
       "widgets_values": [
-        "# FAQ\n\n**How do I use this??**\n\nBuild your prompt and segments in the director timeline, then verify the Model Loader block before queuing.\n\nWorkflow docs: <https://github.com/GeekatplayStudio/video-editor-suite/tree/main/docs>\n\n**Where do I download these models??**\n\nShared LTX links: <https://github.com/wildminder/awesome-ltx2?tab=readme-ov-file>\n\nPut these files here before queuing:\n- `ComfyUI/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3-fp8/blob/main/ltx-2.3-22b-dev-fp8.safetensors>\n- `ComfyUI/models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`\n  <https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors>\n- `ComfyUI/models/text_encoders/ltx-2.3_text_projection_bf16.safetensors`\n  Browse the LTX-2.3 files page: <https://huggingface.co/Lightricks/LTX-2.3/tree/main>\n- `ComfyUI/models/vae/LTX23_audio_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_audio_vae_bf16.safetensors>\n- `ComfyUI/models/vae/LTX23_video_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_video_vae_bf16.safetensors>\n- `ComfyUI/models/vae/taeltx2_3.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/taeltx2_3.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors>\n\nThe LoRA node in this workflow currently points at:\n- `ComfyUI/models/loras/ltx2/ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors`\n\nIf you do not have that exact file, switch the loader to:\n- `ComfyUI/models/loras/ltx-2.3-22b-distilled-lora-384.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled-lora-384.safetensors>\n\n**I'm getting errors when running this workflow!**\n\nDouble check that every file above is in the matching folder. The x2 upscaler here is the v1.1 hotfix. If you only have older upscalers, change the LatentUpscaleModelLoader selection inside the Model Loader block.\n\n**I want to use my own models!**\n\nChange the loaders in the Model Loader block and keep the destination folders the same."
+        "# FAQ\n\n**How do I use this??**\n\nBuild your prompt and segments in the director timeline, then verify the Model Loader block before queuing.\n\nWorkflow docs: <https://github.com/GeekatplayStudio/video-editor-suite/tree/main/docs>\n\n**Which LTX jobs is this workflow best for?**\n\n- Use this file for text-to-video and timeline-guided image-to-video.\n- Use the bundled First Last Frame workflows for first/last-frame and sparse keyframe shots.\n- For V2V-style motion guidance, load a reference clip with `GAPLoadVideoUI` in a guide-based LTX workflow and feed its `IMAGE` output into `GAPSequencer`.\n- The bundled audio path is audio-driven and lip-sync-ready, but strict phoneme lip-sync still needs an external stage.\n\n**What should I install first?**\n\nRun `install.bat` from this package once. It installs the Python deps, ffmpeg setup, `ComfyUI-KJNodes`, and the bundled LTX model set used by these example workflows.\n\n**Where do I download these models??**\n\nShared LTX links: <https://github.com/wildminder/awesome-ltx2?tab=readme-ov-file>\n\nPut these files here before queuing:\n- `ComfyUI/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3-fp8/blob/main/ltx-2.3-22b-dev-fp8.safetensors>\n- `ComfyUI/models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`\n  <https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors>\n- `ComfyUI/models/text_encoders/ltx-2.3_text_projection_bf16.safetensors`\n  Browse the LTX-2.3 files page: <https://huggingface.co/Lightricks/LTX-2.3/tree/main>\n- `ComfyUI/models/vae/LTX23_audio_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_audio_vae_bf16.safetensors>\n- `ComfyUI/models/vae/LTX23_video_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_video_vae_bf16.safetensors>\n- `ComfyUI/models/vae/taeltx2_3.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/taeltx2_3.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors>\n\nThe LoRA node in this workflow currently points at:\n- `ComfyUI/models/loras/ltx2/ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors`\n\nIf you do not have that exact file, switch the loader to:\n- `ComfyUI/models/loras/ltx-2.3-22b-distilled-lora-384.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled-lora-384.safetensors>\n\n**I'm getting errors when running this workflow!**\n\nRun `install.bat` first, then double check that every file above is in the matching folder. The x2 upscaler here is the v1.1 hotfix. If you only have older upscalers, change the LatentUpscaleModelLoader selection inside the Model Loader block.\n\n**I want to use my own models!**\n\nChange the loaders in the Model Loader block and keep the destination folders the same."
       ],
       "color": "#322",
       "bgcolor": "#533"

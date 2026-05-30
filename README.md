@@ -9,6 +9,28 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 - Practical video-editing nodes for trimming, retiming, looping, ping-pong playback, layered video compositing, transitions, text overlays, freeze holds, speed ramps, audio ducking, muxed export, and LTX timeline safety checks.
 - Example workflows that open directly in ComfyUI and give you a starting point for multi-clip edits.
 
+## Why This Fork Is Better
+
+- It stays additive. You can install it beside the original pack without node-ID collisions because every copied node is published under the `GAP*` namespace.
+- It goes beyond the original LTX utilities by bundling a full editorial finishing stack: `GAPClipEditor`, `GAPLayerComposer`, `GAPTransitionComposer`, `GAPMotionTextFX`, and `GAPVideoExporter`.
+- It is harder to break in day-to-day use. `GAPLoadVideoUI` uses safer upload and preview handling, `GAPLoadAudioUI` falls back to silence instead of crashing, and `GAPDirector` now preflights PromptRelay memory budgets before expensive LTX jobs start.
+- It ships with workflow-ready installation. `install.bat` handles dependencies, ffmpeg setup, `ComfyUI-KJNodes`, and the LTX 2.3 model layout used by the bundled workflows.
+- It keeps workflow compatibility in mind. The copied LTX workflows use the same `GUIDE_DATA` socket type, include in-canvas FAQ notes, and now track the local package metadata correctly.
+
+## What This Fork Added
+
+- A dedicated editorial toolchain for trimming, transitions, overlays, titles, freeze holds, speed ramps, and muxed export.
+- Safer media-loading routes and more resilient workflow behavior around missing or invalid source files.
+- PromptRelay budget guards for large LTX 2.3 timeline jobs, including early matrix-size estimates for video and audio attention masks.
+- A one-click installer path that sets up the bundled LTX 2.3 workflows instead of leaving model and dependency wiring to the user.
+- Refreshed bundled workflows and docs so the local package identity, setup notes, and workflow metadata stay in sync.
+
+## README Maintenance Rule
+
+- Every new node, bundled workflow, or user-facing LTX feature added to this fork should also be added to this README.
+- When a workflow gains a new mode, dependency, or setup requirement, update both this README and the in-canvas workflow FAQ note in the same change.
+- If a new feature is experimental or depends on an external node pack, label it clearly here instead of implying that it is built in.
+
 ## One-Click Install
 
 1. Place `ComfyUI-Geekatplay-VideoEditorSuite` inside `ComfyUI/custom_nodes`.
@@ -69,6 +91,10 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
   A single loaded clip feeds `GAPClipEditor` and then `GAPVideoExporter` for trim, retime, loop, and fade workflows.
 - `example_workflows/Geekatplay Video Editor Suite - Full Edit Chain.json`
   Two source clips feed `GAPTransitionComposer`, then `GAPClipEditor`, then `GAPMotionTextFX`, then `GAPVideoExporter` for a longer editorial stack.
+- `example_workflows/Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`
+  A single lab canvas that places the validated LTX Director lane beside the first/last-frame and custom-audio lane, with a V2V helper loader and notes for choosing the right path.
+- `example_workflows/Geekatplay Video Editor Suite - LipSync GAP Bridge.json`
+  An optional post-generation bridge workflow for exact mouth-sync work when `GeekatplayStudio/ComfyUI-LipSync-GAP` is installed.
 
 ## Preview GIFs
 
@@ -87,9 +113,42 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 ## Workflow Starting Points
 
 - If you only want editorial tools, start with the four Geekatplay editor/export demo workflows. They do not need checkpoints, VAEs, or text encoders.
-- If you want timeline-driven LTX generation, use the bundled LTX workflows after running `install.bat` so the required models and `ComfyUI-KJNodes` dependency land in the correct places.
+- If you want the broadest bundled LTX entry point, start with `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`. It places the Director lane and the first/last-frame plus custom-audio lane on one canvas.
+- If you want timeline-driven LTX generation on a smaller canvas, use the other bundled LTX workflows after running `install.bat` so the required models and `ComfyUI-KJNodes` dependency land in the correct places.
 - The copied LTX workflows still include in-canvas FAQ notes so you can confirm every expected filename directly inside ComfyUI.
 - `GAPDirector` now runs a PromptRelay preflight safety check before large timeline jobs so oversized video or audio attention masks fail early with guidance instead of trying to allocate huge penalty matrices.
+
+## LTX 2.3 Coverage
+
+The current fork already exposes most of the practical LTX 2.3 workflow surface:
+
+- Text to video:
+  Use `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` or `GAPDirector` directly for timeline-driven prompt changes, then fall back to the smaller bundled LTX examples when you want a narrower canvas.
+- Image to video:
+  Use the Director Lab for a single-canvas starting point, or `GAPDirector` with guide-image timeline segments or `GAPSequencer` plus `GAPMultiImageLoader` for first-frame, last-frame, and multi-keyframe guide workflows.
+- Video to video:
+  Use the Director Lab workflow's V2V helper loader to trim a guide clip and feed its `IMAGE` output into the guide-driven LTX path, typically through `GAPSequencer` in the bundled FFLF lane.
+- First/last frame and sparse keyframes:
+  Use the Director Lab workflow's right lane, the bundled `LTX I2V First Last Frame` workflows, or build your own with `GAPSequencer` or `GAPKeyframer`.
+- Custom audio and audio-driven shots:
+  Use the Director Lab workflow's right lane or `GAPLoadAudioUI` with the bundled custom-audio LTX workflow, or use the `combined_audio` / `audio_latent` outputs from `GAPDirector` when the workflow uses the LTX audio path.
+- Editorial finishing after generation:
+  Run the generated clip through `GAPClipEditor`, `GAPTransitionComposer`, `GAPLayerComposer`, `GAPMotionTextFX`, and `GAPVideoExporter` instead of rebuilding finishing steps in separate tools.
+- Exact lip-sync post pass:
+  Use `Geekatplay Video Editor Suite - LipSync GAP Bridge.json` after installing `GeekatplayStudio/ComfyUI-LipSync-GAP` when you need a dedicated mouth-sync stage instead of the lighter audio-driven LTX path.
+
+## Lip-Sync And Stability Notes
+
+- This fork is audio-ready by itself, and now includes a bundled bridge workflow for the org's dedicated lip-sync add-on: `GeekatplayStudio/ComfyUI-LipSync-GAP`.
+- The existing LTX workflows support custom audio, audio latents, and audio-aligned export, which is the correct base for audio-driven shots before a stricter mouth-sync pass.
+- If you need strict mouth-shape matching, install `ComfyUI-LipSync-GAP` and use `Geekatplay Video Editor Suite - LipSync GAP Bridge.json`. That exact solver is still an optional add-on rather than a built-in node set in this repo.
+- The stability work in this fork is focused on predictable workflow opening, safer media I/O, resilient editorial nodes, and early PromptRelay memory checks for long LTX jobs.
+
+## Optional Lip-Sync Add-On
+
+- Recommended add-on: `https://github.com/GeekatplayStudio/ComfyUI-LipSync-GAP`
+- Install it under `ComfyUI/custom_nodes/ComfyUI-LipSync-GAP` and run its `install.bat`.
+- The bridge workflow expects the LipSync GAP add-on to provide `GapLipSyncModelLoader` and `GapLipSyncSampler`, plus the `latentsync_unet.pt`, Whisper checkpoint, and Mediapipe face landmarker assets described in that repo.
 
 ## Documentation
 

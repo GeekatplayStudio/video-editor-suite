@@ -1,4 +1,4 @@
-{
+﻿{
   "id": "7c4f75e3-b3fc-44ef-bdc1-55c6ffed5faa",
   "revision": 0,
   "last_node_id": 4,
@@ -70,8 +70,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "Geekatplay Studio/Video Editor Suite-ComfyUI",
-        "ver": "919e3c15e53502a7f9165c4355a635b4fa2a07ae",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPLoadVideoUI"
       },
       "widgets_values": [
@@ -150,8 +150,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "Geekatplay Studio/Video Editor Suite-ComfyUI",
-        "ver": "919e3c15e53502a7f9165c4355a635b4fa2a07ae",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPClipEditor"
       },
       "widgets_values": [
@@ -209,8 +209,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "Geekatplay Studio/Video Editor Suite-ComfyUI",
-        "ver": "919e3c15e53502a7f9165c4355a635b4fa2a07ae",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPVideoExporter"
       },
       "widgets_values": [

@@ -62,6 +62,33 @@ Use this workflow when:
 Requirements:
 - No extra checkpoints, VAEs, or text encoders are required.
 
+### `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`
+
+Purpose:
+Places the validated LTX Director lane beside the first/last-frame plus custom-audio lane on one canvas, then adds a V2V helper loader and handoff notes for the optional lip-sync stage.
+
+Use this workflow when:
+- You want one bundled canvas that covers text-to-video, timeline-guided image-to-video, first/last-frame, and custom-audio entry points without opening multiple files.
+- You want the recommended V2V starting point visible on the same canvas as the guide-based LTX lane.
+- You want a stable handoff point from generation into the optional lip-sync bridge workflow.
+
+Requirements:
+- Run `install.bat` first so the bundled LTX model pack and `ComfyUI-KJNodes` dependency are present.
+- Keep the left Director lane and the right FFLF lane separate unless you intentionally rewire them.
+
+### `Geekatplay Video Editor Suite - LipSync GAP Bridge.json`
+
+Purpose:
+Loads a talking-head source clip and target audio, runs them through `GapLipSyncModelLoader` plus `GapLipSyncSampler`, and exports the result with `GAPVideoExporter`.
+
+Use this workflow when:
+- You already have a generated or edited source clip and now need stricter mouth-shape matching than the lighter audio-driven LTX path provides.
+- You want a Geekatplay-native bridge that uses `GAPLoadVideoUI`, `GAPLoadAudioUI`, and `GAPVideoExporter` instead of depending on VideoHelperSuite nodes.
+
+Requirements:
+- Install `GeekatplayStudio/ComfyUI-LipSync-GAP` separately under `ComfyUI/custom_nodes`.
+- Run the LipSync GAP `install.bat` so the `GapLipSyncModelLoader` and `GapLipSyncSampler` nodes load and the `latentsync` model assets are present.
+
 ## Bundled LTX Workflow Model Pack
 
 Running `install.bat` installs the `ComfyUI-KJNodes` dependency plus the model set used by the bundled LTX workflows into the correct ComfyUI folders:
@@ -82,6 +109,42 @@ That final `loras/ltx2/...` file is created as a workflow-safe alias so the copi
 The copied LTX workflows also use `VAELoaderKJ` from `ComfyUI-KJNodes` and will report a missing node pack if that repo is not present. The installer now clones `https://github.com/kijai/ComfyUI-KJNodes.git` automatically during the LTX setup path.
 
 The timeline-driven LTX nodes now also run a PromptRelay safety preflight. If an edit would allocate an oversized video or audio attention mask, the workflow stops early with a matrix-size estimate and tuning guidance instead of failing later after heavy model staging.
+
+## LTX 2.3 Mode Guide
+
+Use the bundled LTX workflows based on the job you are actually trying to run:
+
+- Text to video:
+	Start with `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` when you want the broadest single-canvas entry point, or `LTX Director Example Workflow (Fixed).json` when you want the smaller Director-only canvas.
+- Image to video:
+	Use the Director Lab right lane or `LTX I2V First Last Frame 2 Stage Workflow v6.json` or `LTX I2V First Last Frame 3 Stage Workflow v6.json` when one or more guide frames should shape the shot.
+- First frame, last frame, or sparse keyframes:
+	Use the same `LTX I2V First Last Frame` workflows or the Director Lab right lane and drive guide placement with `GAPSequencer`.
+- Custom audio or audio-driven shots:
+	Use the Director Lab right lane or `LTX I2V FFLF Custom Audio Workflow - SUPPORTS LATEST COMFYUI VERSION - V3.json` when you want a bundled example that already exposes `GAPLoadAudioUI` and the custom-audio switch.
+- Exact lip-sync post pass:
+	Use `Geekatplay Video Editor Suite - LipSync GAP Bridge.json` after installing `GeekatplayStudio/ComfyUI-LipSync-GAP`.
+- Editorial finishing after generation:
+	Move the generated clip into the four Geekatplay editor/export workflows when you want trims, overlays, transitions, captions, or export tuning.
+
+## Video-To-Video Recipe
+
+There is no separate bundled file named "video to video," but the existing nodes already cover that guide-driven path:
+
+- Load a source clip with `GAPLoadVideoUI`.
+- Trim and crop it there so the guide clip length matches the motion reference you want.
+- Feed the node's `IMAGE` output into the `multi_input` side of `GAPSequencer` in one of the bundled guide-based LTX workflows.
+- Use `insert_mode`, frame placement, and strength controls to decide whether the source clip acts like dense motion guidance or sparse guide frames.
+
+This is the stable way to do V2V-style motion transfer in this fork without pretending there is a separate solver hidden elsewhere.
+
+## Lip-Sync Scope
+
+The bundled workflows are audio-ready, not a full phoneme lip-sync package:
+
+- `GAPLoadAudioUI`, `combined_audio`, and the LTX audio latent path give you a stable base for audio-driven shots.
+- That is enough for narration-driven timing and for pipelines that need audio carried cleanly through generation and export.
+- If you need strict mouth-shape tracking to speech, install `GeekatplayStudio/ComfyUI-LipSync-GAP` and use `Geekatplay Video Editor Suite - LipSync GAP Bridge.json` as the post-generation stage.
 
 ## Existing Legacy-Compatible Workflows
 

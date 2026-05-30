@@ -1,43 +1,43 @@
 ﻿{
-  "id": "0649ae11-2e13-4b31-b8f1-b0be21dfec1f",
+  "id": "3eec52f0-6820-4508-b590-d911e23047ec",
   "revision": 0,
-  "last_node_id": 6,
-  "last_link_id": 8,
+  "last_node_id": 8,
+  "last_link_id": 6,
   "nodes": [
     {
       "id": 1,
-      "type": "Note",
+      "type": "MarkdownNote",
       "pos": [
-        80,
-        60
+        60,
+        40
       ],
       "size": [
-        360,
-        170
+        560,
+        520
       ],
       "flags": {},
       "order": 0,
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "title": "Geekatplay Transition Showcase",
+      "title": "LipSync GAP Bridge",
       "properties": {},
       "widgets_values": [
-        "1. Load or upload a first clip into the left GAP video loader.\n2. Load or upload a second clip into the right GAP video loader.\n3. Tweak the transition, text overlay, freeze, and speed-ramp settings.\n4. Queue the workflow to render a muxed preview video into ComfyUI/output/Geekatplay/VideoEditorSuite.\n5. No extra checkpoints, VAEs, or text encoders are required for this workflow. Put source videos in ComfyUI/input or upload them directly in GAPLoadVideoUI."
+        "# Geekatplay LipSync GAP Bridge\n\nUse this workflow after you already have a talking-head or face-visible source clip.\n\n**Required add-on**\n- Install `GeekatplayStudio/ComfyUI-LipSync-GAP` into `ComfyUI/custom_nodes`.\n- Run its `install.bat` so `ComfyUI/models/latentsync/latentsync_unet.pt`, the Whisper checkpoint, and `latentsync/weights/face_landmarker.task` are available.\n\n**How to use it**\n1. Load the source video in `GAPLoadVideoUI`.\n2. Load the target speech or narration in `GAPLoadAudioUI`.\n3. Select a standard SD 1.5 compatible checkpoint in `CheckpointLoaderSimple`; the workflow only uses its VAE output for the LipSync GAP loader.\n4. Tune `GapLipSyncModelLoader` precision and Whisper size if needed.\n5. Keep `frame_rate` aligned to the source clip and export with `GAPVideoExporter`.\n\nThis bridge stays separate from the LTX generation lanes on purpose. It is the post-generation stage when you need exact mouth motion rather than the lighter audio-driven LTX path."
       ],
-      "color": "#223",
-      "bgcolor": "#335"
+      "color": "#323",
+      "bgcolor": "#535"
     },
     {
       "id": 2,
-      "type": "GAPLoadVideoUI",
+      "type": "CheckpointLoaderSimple",
       "pos": [
         80,
-        280
+        620
       ],
       "size": [
-        440,
-        920
+        315,
+        98
       ],
       "flags": {},
       "order": 1,
@@ -45,12 +45,158 @@
       "inputs": [],
       "outputs": [
         {
-          "name": "images",
-          "type": "IMAGE",
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": null
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": null
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
           "links": [
             1
           ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "v2-1_768-ema-pruned.safetensors"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 3,
+      "type": "GapLipSyncModelLoader",
+      "pos": [
+        450,
+        600
+      ],
+      "size": [
+        315,
+        150
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "models",
+          "type": "PERFECT_SYNC_MODELS",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "GapLipSyncModelLoader"
+      },
+      "widgets_values": [
+        "unet\\latentsync_unet.pt",
+        "tiny",
+        "fp16"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 4,
+      "type": "GAPLoadVideoUI",
+      "pos": [
+        80,
+        810
+      ],
+      "size": [
+        440,
+        920
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
         },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": null
+        },
+        {
+          "name": "duration",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
+        "Node name for S&R": "GAPLoadVideoUI"
+      },
+      "widgets_values": [
+        "",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        "maintain aspect ratio",
+        0,
+        0,
+        24,
+        "seconds",
+        0,
+        0,
+        1,
+        1,
+        null,
+        ""
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 5,
+      "type": "GAPLoadAudioUI",
+      "pos": [
+        570,
+        1030
+      ],
+      "size": [
+        390,
+        378
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
         {
           "name": "audio",
           "type": "AUDIO",
@@ -62,35 +208,19 @@
           "name": "duration",
           "type": "FLOAT",
           "links": null
-        },
-        {
-          "name": "frame_count",
-          "type": "INT",
-          "links": null
         }
       ],
       "properties": {
         "cnr_id": "comfyui-geekatplay-video-editor-suite",
         "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
-        "Node name for S&R": "GAPLoadVideoUI"
+        "Node name for S&R": "GAPLoadAudioUI"
       },
       "widgets_values": [
-        "",
+        "audio.wav",
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        "maintain aspect ratio",
-        0,
-        0,
-        24,
-        "seconds",
-        0,
-        0,
-        1,
-        1,
+        25,
+        25,
+        null,
         null,
         ""
       ],
@@ -98,108 +228,34 @@
       "bgcolor": "#000"
     },
     {
-      "id": 3,
-      "type": "GAPLoadVideoUI",
+      "id": 6,
+      "type": "GapLipSyncSampler",
       "pos": [
-        580,
-        280
-      ],
-      "size": [
-        440,
+        1020,
         920
       ],
+      "size": [
+        350,
+        266
+      ],
       "flags": {},
-      "order": 2,
+      "order": 5,
       "mode": 0,
-      "inputs": [],
-      "outputs": [
+      "inputs": [
+        {
+          "name": "models",
+          "type": "PERFECT_SYNC_MODELS",
+          "link": 2
+        },
         {
           "name": "images",
           "type": "IMAGE",
-          "links": [
-            2
-          ]
+          "link": 4
         },
         {
           "name": "audio",
           "type": "AUDIO",
-          "links": [
-            4
-          ]
-        },
-        {
-          "name": "duration",
-          "type": "FLOAT",
-          "links": null
-        },
-        {
-          "name": "frame_count",
-          "type": "INT",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-geekatplay-video-editor-suite",
-        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
-        "Node name for S&R": "GAPLoadVideoUI"
-      },
-      "widgets_values": [
-        "",
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        "maintain aspect ratio",
-        0,
-        0,
-        24,
-        "seconds",
-        0,
-        0,
-        1,
-        1,
-        null,
-        ""
-      ],
-      "color": "#222",
-      "bgcolor": "#000"
-    },
-    {
-      "id": 4,
-      "type": "GAPTransitionComposer",
-      "pos": [
-        1100,
-        450
-      ],
-      "size": [
-        340,
-        330
-      ],
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "primary_images",
-          "type": "IMAGE",
-          "link": 1
-        },
-        {
-          "name": "secondary_images",
-          "type": "IMAGE",
-          "link": 2
-        },
-        {
-          "name": "primary_audio",
-          "type": "AUDIO",
           "link": 3
-        },
-        {
-          "name": "secondary_audio",
-          "type": "AUDIO",
-          "link": 4
         }
       ],
       "outputs": [
@@ -216,48 +272,36 @@
           "links": [
             6
           ]
-        },
-        {
-          "name": "duration",
-          "type": "FLOAT",
-          "links": null
-        },
-        {
-          "name": "frame_count",
-          "type": "INT",
-          "links": null
         }
       ],
       "properties": {
-        "cnr_id": "comfyui-geekatplay-video-editor-suite",
-        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
-        "Node name for S&R": "GAPTransitionComposer"
+        "Node name for S&R": "GapLipSyncSampler"
       },
       "widgets_values": [
+        1247,
+        20,
+        1.5,
         24,
-        "crossfade",
-        16,
-        6,
-        4,
-        "match primary",
-        true
+        "768",
+        0,
+        0
       ],
       "color": "#222",
       "bgcolor": "#000"
     },
     {
-      "id": 5,
-      "type": "GAPMotionTextFX",
+      "id": 7,
+      "type": "GAPVideoExporter",
       "pos": [
-        1510,
-        410
+        1450,
+        940
       ],
       "size": [
-        360,
-        560
+        340,
+        310
       ],
       "flags": {},
-      "order": 4,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -269,87 +313,6 @@
           "name": "audio",
           "type": "AUDIO",
           "link": 6
-        }
-      ],
-      "outputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "links": [
-            7
-          ]
-        },
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            8
-          ]
-        },
-        {
-          "name": "duration",
-          "type": "FLOAT",
-          "links": null
-        },
-        {
-          "name": "frame_count",
-          "type": "INT",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-geekatplay-video-editor-suite",
-        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
-        "Node name for S&R": "GAPMotionTextFX"
-      },
-      "widgets_values": [
-        24,
-        "Geekatplay Video Editor Suite\nTransition Showcase",
-        40,
-        "bottom-center",
-        32,
-        24,
-        "#FFFFFF",
-        "#101010",
-        0.45,
-        "#000000",
-        2,
-        0,
-        0,
-        8,
-        6,
-        6,
-        18,
-        0.75,
-        1.35
-      ],
-      "color": "#222",
-      "bgcolor": "#000"
-    },
-    {
-      "id": 6,
-      "type": "GAPVideoExporter",
-      "pos": [
-        1930,
-        480
-      ],
-      "size": [
-        340,
-        310
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 7
-        },
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "link": 8
         }
       ],
       "outputs": [
@@ -371,7 +334,7 @@
       },
       "widgets_values": [
         24,
-        "Geekatplay/VideoEditorSuite/showcase_transition",
+        "Geekatplay/VideoEditorSuite/lipsync_gap_bridge",
         "mp4",
         "auto",
         "auto",
@@ -384,70 +347,78 @@
       ],
       "color": "#322",
       "bgcolor": "#533"
+    },
+    {
+      "id": 8,
+      "type": "Note",
+      "pos": [
+        590,
+        1430
+      ],
+      "size": [
+        300,
+        110
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Audio Trim Note",
+      "properties": {},
+      "widgets_values": [
+        "Trim narration here first if you only want to lip-sync a subsection of the source clip."
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
     }
   ],
   "links": [
     {
       "id": 1,
       "origin_id": 2,
-      "origin_slot": 0,
-      "target_id": 4,
+      "origin_slot": 2,
+      "target_id": 3,
       "target_slot": 0,
-      "type": "IMAGE"
+      "type": "VAE"
     },
     {
       "id": 2,
       "origin_id": 3,
       "origin_slot": 0,
-      "target_id": 4,
-      "target_slot": 1,
-      "type": "IMAGE"
+      "target_id": 6,
+      "target_slot": 0,
+      "type": "PERFECT_SYNC_MODELS"
     },
     {
       "id": 3,
-      "origin_id": 2,
-      "origin_slot": 1,
-      "target_id": 4,
+      "origin_id": 5,
+      "origin_slot": 0,
+      "target_id": 6,
       "target_slot": 2,
       "type": "AUDIO"
     },
     {
       "id": 4,
-      "origin_id": 3,
-      "origin_slot": 1,
-      "target_id": 4,
-      "target_slot": 3,
-      "type": "AUDIO"
+      "origin_id": 4,
+      "origin_slot": 0,
+      "target_id": 6,
+      "target_slot": 1,
+      "type": "IMAGE"
     },
     {
       "id": 5,
-      "origin_id": 4,
+      "origin_id": 6,
       "origin_slot": 0,
-      "target_id": 5,
+      "target_id": 7,
       "target_slot": 0,
       "type": "IMAGE"
     },
     {
       "id": 6,
-      "origin_id": 4,
+      "origin_id": 6,
       "origin_slot": 1,
-      "target_id": 5,
-      "target_slot": 1,
-      "type": "AUDIO"
-    },
-    {
-      "id": 7,
-      "origin_id": 5,
-      "origin_slot": 0,
-      "target_id": 6,
-      "target_slot": 0,
-      "type": "IMAGE"
-    },
-    {
-      "id": 8,
-      "origin_id": 5,
-      "origin_slot": 1,
-      "target_id": 6,
+      "target_id": 7,
       "target_slot": 1,
       "type": "AUDIO"
     }
@@ -455,15 +426,14 @@
   "groups": [],
   "config": {},
   "extra": {
-    "frontendVersion": "1.42.14",
     "workflowRendererVersion": "LG",
+    "frontendVersion": "1.36.14",
     "ds": {
-      "scale": 0.8,
+      "scale": 0.85,
       "offset": [
-        0,
-        0
+        820,
+        520
       ]
     }
-  },
-  "version": 0.4
+  }
 }

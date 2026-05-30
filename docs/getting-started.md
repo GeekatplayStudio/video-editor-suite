@@ -49,6 +49,10 @@ The bundled LTX workflows also expect the `VAELoaderKJ` / `Video VAELoader` node
 
 ## First Workflow To Open
 
+If you want the broadest LTX starting point on one canvas, load:
+
+- `example_workflows/Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`
+
 If you want to start with a multi-clip edit, load:
 
 - `example_workflows/Geekatplay Video Editor Suite - Transition Showcase.json`
@@ -125,6 +129,29 @@ These four workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAPC
 3. Read the in-canvas FAQ note inside that workflow before queueing anything.
 4. Confirm that the loader nodes inside the workflow are pointed at the downloaded checkpoint, text encoders, VAEs, and upscalers.
 5. If you swap in your own files, keep them in the same ComfyUI model folder type so the workflow structure stays valid.
+
+## Choose The Right LTX Starting Workflow
+
+1. Open `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` when you want the broadest single-canvas LTX entry point with Director, first/last-frame, custom-audio, and V2V guidance notes on one canvas.
+2. Open `LTX Director Example Workflow (Fixed).json` when you want the smaller Director-only canvas for text-to-video with timeline edits, prompt segments, and guide-image timing.
+3. Open `LTX I2V First Last Frame 2 Stage Workflow v6.json` or `LTX I2V First Last Frame 3 Stage Workflow v6.json` when you want a dedicated image-to-video, first/last-frame, or sparse multi-keyframe canvas.
+4. Open `LTX I2V FFLF Custom Audio Workflow - SUPPORTS LATEST COMFYUI VERSION - V3.json` when you want the standalone bundled custom-audio or audio-driven path.
+5. Move the output into the Geekatplay editor/export workflows after generation when you want a stable finishing pass with trims, transitions, overlays, titles, and export controls.
+
+## Video-To-Video With Existing Nodes
+
+1. Open `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`.
+2. Load and trim the reference clip in the V2V helper `GAPLoadVideoUI` node.
+3. Feed that node's `IMAGE` output into the right-lane `GAPSequencer` `multi_input` pin when you want video guidance instead of stills.
+4. Use frame placement and guide strength settings to decide whether the clip behaves like sparse guide frames or denser motion guidance.
+
+This repo does not ship a separate V2V-only workflow file because the stable path is already covered by `GAPLoadVideoUI` plus the existing guide-based LTX workflows.
+
+## Lip-Sync Expectations
+
+- The bundled LTX workflows support custom audio and the LTX audio latent path.
+- That makes them suitable for audio-driven shots and for pipelines that need clean audio carried through the render path.
+- For exact mouth matching, install `GeekatplayStudio/ComfyUI-LipSync-GAP` and use `Geekatplay Video Editor Suite - LipSync GAP Bridge.json` after generation.
 
 ## LTX Timeline Safety Notes
 

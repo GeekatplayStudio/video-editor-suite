@@ -1,4 +1,4 @@
-{
+﻿{
   "id": "a41dc75e-fc80-4307-897e-f3118e4fa21b",
   "revision": 0,
   "last_node_id": 443,
@@ -140,7 +140,7 @@
       "title": "Model Loader Note",
       "properties": {},
       "widgets_values": [
-        "↓ Select your own models in this subgraph ↓"
+        "â†“ Select your own models in this subgraph â†“"
       ],
       "color": "#223",
       "bgcolor": "#335"
@@ -188,7 +188,7 @@
       "title": "FAQ",
       "properties": {},
       "widgets_values": [
-        "# FAQ\n\n**How do I set the length of the video?**\n\nSet the duration and model choices in the Model Loader Subgraph ->\n\nWorkflow docs: <https://github.com/GeekatplayStudio/video-editor-suite/tree/main/docs>\n\n**Where do I download these models??**\n\nShared LTX links: <https://github.com/wildminder/awesome-ltx2?tab=readme-ov-file>\n\nPut these files here before queuing:\n- `ComfyUI/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3-fp8/blob/main/ltx-2.3-22b-dev-fp8.safetensors>\n- `ComfyUI/models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`\n  <https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors>\n- `ComfyUI/models/vae/LTX23_audio_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_audio_vae_bf16.safetensors>\n- `ComfyUI/models/vae/LTX23_video_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_video_vae_bf16.safetensors>\n- `ComfyUI/models/vae/taeltx2_3.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/taeltx2_3.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors>\n\nThe LoRA node in this workflow currently points at:\n- `ComfyUI/models/loras/ltx2/ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors`\n\nIf you do not have that exact file, switch the loader to:\n- `ComfyUI/models/loras/ltx-2.3-22b-distilled-lora-384.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled-lora-384.safetensors>\n\n**I keep getting errors when running this workflow!**\n\nDouble check that every file above is in the matching folder. The x2 upscaler here is the v1.1 hotfix. If you only have older upscalers, change the LatentUpscaleModelLoader selections inside the Model Loader Subgraph.\n\n**I want to use my own models!**\n\nChange the loaders inside the Model Loader Subgraph -> and keep the destination folders the same."
+        "# FAQ\n\n**How do I set the length of the video?**\n\nSet the duration and model choices in the Model Loader Subgraph ->\n\nWorkflow docs: <https://github.com/GeekatplayStudio/video-editor-suite/tree/main/docs>\n\n**What should I install first?**\n\nRun `install.bat` from this package once. It installs the Python deps, ffmpeg setup, `ComfyUI-KJNodes`, and the bundled LTX model set used by these example workflows.\n\n**Where do I download these models??**\n\nShared LTX links: <https://github.com/wildminder/awesome-ltx2?tab=readme-ov-file>\n\nPut these files here before queuing:\n- `ComfyUI/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3-fp8/blob/main/ltx-2.3-22b-dev-fp8.safetensors>\n- `ComfyUI/models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`\n  <https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors>\n- `ComfyUI/models/vae/LTX23_audio_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_audio_vae_bf16.safetensors>\n- `ComfyUI/models/vae/LTX23_video_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_video_vae_bf16.safetensors>\n- `ComfyUI/models/vae/taeltx2_3.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/taeltx2_3.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors>\n\nThe LoRA node in this workflow currently points at:\n- `ComfyUI/models/loras/ltx2/ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors`\n\nIf you do not have that exact file, switch the loader to:\n- `ComfyUI/models/loras/ltx-2.3-22b-distilled-lora-384.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled-lora-384.safetensors>\n\n**I keep getting errors when running this workflow!**\n\nRun `install.bat` first, then double check that every file above is in the matching folder. The x2 upscaler here is the v1.1 hotfix. If you only have older upscalers, change the LatentUpscaleModelLoader selections inside the Model Loader Subgraph.\n\n**I want to use my own models!**\n\nChange the loaders inside the Model Loader Subgraph -> and keep the destination folders the same."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -415,8 +415,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "Geekatplay Studio/Video Editor Suite-ComfyUI",
-        "ver": "ecd00e6b404f14b07c7b54b0b0033e8bccb32d24",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPMultiImageLoader"
       },
       "widgets_values": [
@@ -662,8 +662,8 @@
         }
       ],
       "properties": {
-        "cnr_id": "Geekatplay Studio/Video Editor Suite-ComfyUI",
-        "ver": "ecd00e6b404f14b07c7b54b0b0033e8bccb32d24",
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
         "Node name for S&R": "GAPSequencer",
         "num_images": 0,
         "insert_frame_1": 0,
@@ -2889,8 +2889,8 @@
               }
             ],
             "properties": {
-              "cnr_id": "Geekatplay Studio/Video Editor Suite-ComfyUI",
-              "ver": "ecd00e6b404f14b07c7b54b0b0033e8bccb32d24",
+              "cnr_id": "comfyui-geekatplay-video-editor-suite",
+              "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
               "Node name for S&R": "GAPSequencer",
               "num_images": 0,
               "insert_frame_1": 0,
@@ -4760,8 +4760,8 @@
               }
             ],
             "properties": {
-              "cnr_id": "Geekatplay Studio/Video Editor Suite-ComfyUI",
-              "ver": "ecd00e6b404f14b07c7b54b0b0033e8bccb32d24",
+              "cnr_id": "comfyui-geekatplay-video-editor-suite",
+              "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
               "Node name for S&R": "GAPSequencer",
               "num_images": 0,
               "insert_frame_1": 0,
@@ -6636,7 +6636,7 @@
             "title": "FAQ",
             "properties": {},
             "widgets_values": [
-              "# FAQ\n\n**How do I set the length of the video?**\n\nSet the duration and model choices in the Model Loader Subgraph ->\n\nWorkflow docs: <https://github.com/GeekatplayStudio/video-editor-suite/tree/main/docs>\n\n**Where do I download these models??**\n\nShared LTX links: <https://github.com/wildminder/awesome-ltx2?tab=readme-ov-file>\n\nPut these files here before queuing:\n- `ComfyUI/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3-fp8/blob/main/ltx-2.3-22b-dev-fp8.safetensors>\n- `ComfyUI/models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`\n  <https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors>\n- `ComfyUI/models/vae/LTX23_audio_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_audio_vae_bf16.safetensors>\n- `ComfyUI/models/vae/LTX23_video_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_video_vae_bf16.safetensors>\n- `ComfyUI/models/vae/taeltx2_3.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/taeltx2_3.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors>\n\nThe LoRA node in this workflow currently points at:\n- `ComfyUI/models/loras/ltx2/ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors`\n\nIf you do not have that exact file, switch the loader to:\n- `ComfyUI/models/loras/ltx-2.3-22b-distilled-lora-384.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled-lora-384.safetensors>\n\n**I keep getting errors when running this workflow!**\n\nDouble check that every file above is in the matching folder. The x2 upscaler here is the v1.1 hotfix. If you only have older upscalers, change the LatentUpscaleModelLoader selections inside the Model Loader Subgraph.\n\n**I want to use my own models!**\n\nChange the loaders inside the Model Loader Subgraph -> and keep the destination folders the same."
+              "# FAQ\n\n**How do I set the length of the video?**\n\nSet the duration and model choices in the Model Loader Subgraph ->\n\nWorkflow docs: <https://github.com/GeekatplayStudio/video-editor-suite/tree/main/docs>\n\n**What should I install first?**\n\nRun `install.bat` from this package once. It installs the Python deps, ffmpeg setup, `ComfyUI-KJNodes`, and the bundled LTX model set used by these example workflows.\n\n**Where do I download these models??**\n\nShared LTX links: <https://github.com/wildminder/awesome-ltx2?tab=readme-ov-file>\n\nPut these files here before queuing:\n- `ComfyUI/models/checkpoints/ltx-2.3-22b-dev-fp8.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3-fp8/blob/main/ltx-2.3-22b-dev-fp8.safetensors>\n- `ComfyUI/models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`\n  <https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors>\n- `ComfyUI/models/vae/LTX23_audio_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_audio_vae_bf16.safetensors>\n- `ComfyUI/models/vae/LTX23_video_vae_bf16.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/LTX23_video_vae_bf16.safetensors>\n- `ComfyUI/models/vae/taeltx2_3.safetensors`\n  <https://huggingface.co/Kijai/LTX2.3_comfy/blob/main/vae/taeltx2_3.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors>\n- `ComfyUI/models/latent_upscale_models/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-spatial-upscaler-x1.5-1.0.safetensors>\n\nThe LoRA node in this workflow currently points at:\n- `ComfyUI/models/loras/ltx2/ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors`\n\nIf you do not have that exact file, switch the loader to:\n- `ComfyUI/models/loras/ltx-2.3-22b-distilled-lora-384.safetensors`\n  <https://huggingface.co/Lightricks/LTX-2.3/blob/main/ltx-2.3-22b-distilled-lora-384.safetensors>\n\n**I keep getting errors when running this workflow!**\n\nRun `install.bat` first, then double check that every file above is in the matching folder. The x2 upscaler here is the v1.1 hotfix. If you only have older upscalers, change the LatentUpscaleModelLoader selections inside the Model Loader Subgraph.\n\n**I want to use my own models!**\n\nChange the loaders inside the Model Loader Subgraph -> and keep the destination folders the same."
             ],
             "color": "#432",
             "bgcolor": "#653"

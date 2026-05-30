@@ -65,6 +65,10 @@ If you want the longer transition -> clip edit -> text FX -> export pipeline, lo
 
 - `example_workflows/Geekatplay Video Editor Suite - Full Edit Chain.json`
 
+If you want to draft a mixed-mode manifest before building the generation graph, load:
+
+- `example_workflows/Geekatplay Video Editor Suite - Smart Timeline Planner.json`
+
 If you want to start with a single-clip trim and export workflow, load:
 
 - `example_workflows/Geekatplay Video Editor Suite - Clip Editor Export.json`
@@ -118,7 +122,7 @@ These four workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAPC
 2. Load the first and second source clips with the two `GAPLoadVideoUI` nodes.
 3. Tune `GAPTransitionComposer` for the transition style and overlap.
 4. Tune `GAPClipEditor` for trim, retime, loop, or fade behavior on the combined clip.
-5. Tune `GAPMotionTextFX` for text overlays, freeze inserts, and speed ramps.
+5. Tune `GAPMotionTextFX` for text overlays, freeze inserts, and speed ramps. Its text field burns titles into the existing frames only; it does not control generated scene content.
 6. Tune `GAPVideoExporter` last, because container and codec changes do not affect editorial timing.
 7. Queue the workflow to export the final composite clip.
 
@@ -137,6 +141,16 @@ These four workflows are the fastest way to confirm that `GAPLoadVideoUI`, `GAPC
 3. Open `LTX I2V First Last Frame 2 Stage Workflow v6.json` or `LTX I2V First Last Frame 3 Stage Workflow v6.json` when you want a dedicated image-to-video, first/last-frame, or sparse multi-keyframe canvas.
 4. Open `LTX I2V FFLF Custom Audio Workflow - SUPPORTS LATEST COMFYUI VERSION - V3.json` when you want the standalone bundled custom-audio or audio-driven path.
 5. Move the output into the Geekatplay editor/export workflows after generation when you want a stable finishing pass with trims, transitions, overlays, titles, and export controls.
+
+## Mixed-Mode Timeline Planning
+
+1. Open `Geekatplay Video Editor Suite - Smart Timeline Planner.json` when you want one manifest that mixes `t2v`, `i2v`, `v2v`, and `fflf` shots.
+2. Keep `strict_validation=false` while you are still drafting prompts, durations, and asset filenames.
+3. Read the `summary` output first. It tells you which shots can route into `GAPDirector` and which ones still need dedicated guide-video or first/last-frame lanes.
+4. Use `timeline_plan.lane_exports` and `timeline_plan.render_queue` as the normalized source of truth before you wire a larger orchestration graph.
+5. Render each segment through its own lane, then connect those clips into `GAPSmartTimelineSupervisor` and read `missing_image_slots` before you assemble.
+6. Pass the same `timeline_plan` on to `GAPSmartTimelineAssembler`, then feed rendered clips into `images_1` / `audio_1`, `images_2` / `audio_2`, and so on.
+7. Treat the current planner plus supervisor plus assembler path as orchestration and stitching only. It does not run the mixed render lanes internally yet.
 
 ## Video-To-Video With Existing Nodes
 

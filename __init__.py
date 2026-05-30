@@ -11,6 +11,9 @@ from .transition_composer import GAPTransitionComposer
 from .motion_text_fx import GAPMotionTextFX
 from .ltx_director import GAPDirector
 from .ltx_director_guide import GAPDirectorGuide
+from .smart_timeline_planner import GAPSmartTimelinePlanner
+from .smart_timeline_supervisor import GAPSmartTimelineSupervisor
+from .smart_timeline_assembler import GAPSmartTimelineAssembler
 from comfy_api.latest import ComfyExtension, io
 from typing_extensions import override
 
@@ -39,6 +42,9 @@ NODE_CLASS_MAPPINGS = {
     "GAPMotionTextFX": GAPMotionTextFX,
     "GAPDirector": GAPDirector,
     "GAPDirectorGuide": GAPDirectorGuide,
+    "GAPSmartTimelinePlanner": GAPSmartTimelinePlanner,
+    "GAPSmartTimelineSupervisor": GAPSmartTimelineSupervisor,
+    "GAPSmartTimelineAssembler": GAPSmartTimelineAssembler,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -55,6 +61,9 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "GAPMotionTextFX": "Geekatplay Motion Text FX",
     "GAPDirector": "Geekatplay Timeline Director",
     "GAPDirectorGuide": "Geekatplay Director Guide",
+    "GAPSmartTimelinePlanner": "Geekatplay Smart Timeline Planner",
+    "GAPSmartTimelineSupervisor": "Geekatplay Smart Timeline Supervisor",
+    "GAPSmartTimelineAssembler": "Geekatplay Smart Timeline Assembler",
 }
 
 WEB_DIRECTORY = "./js"

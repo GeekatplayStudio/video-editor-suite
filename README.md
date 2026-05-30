@@ -9,6 +9,16 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 - Practical video-editing nodes for trimming, retiming, looping, ping-pong playback, layered video compositing, transitions, text overlays, freeze holds, speed ramps, audio ducking, muxed export, and LTX timeline safety checks.
 - Example workflows that open directly in ComfyUI and give you a starting point for multi-clip edits.
 
+## What Is Different In This Fork
+
+- Every copied node lives under the `GAP*` namespace so this package can stay installed beside the original node pack without collisions.
+- The fork adds an editorial finishing stack that is not part of the narrower upstream LTX timeline utilities: `GAPClipEditor`, `GAPLayerComposer`, `GAPTransitionComposer`, `GAPMotionTextFX`, and `GAPVideoExporter`.
+- Media input is hardened for day-to-day use: the branded video loader uses safer upload and preview routes, and the audio loader falls back to silence instead of crashing on bad inputs.
+- PromptRelay safety checks were added so oversized text/video/audio attention masks fail early with explicit guidance instead of dying late after heavy model staging.
+- `install.bat` is workflow-oriented in this fork. It installs dependencies, ffmpeg, `ComfyUI-KJNodes`, and the bundled LTX 2.3 model layout used by the packaged example workflows.
+- The fork now includes smart timeline orchestration helpers: `GAPSmartTimelinePlanner`, `GAPSmartTimelineSupervisor`, and `GAPSmartTimelineAssembler` for mixed-mode planning, slot tracking, and clip stitching.
+- Bundled workflow notes and local metadata are kept in sync with this package, including the `GUIDE_DATA` socket type and workflow `cnr_id` values.
+
 ## Why This Fork Is Better
 
 - It stays additive. You can install it beside the original pack without node-ID collisions because every copied node is published under the `GAP*` namespace.
@@ -20,6 +30,9 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 ## What This Fork Added
 
 - A dedicated editorial toolchain for trimming, transitions, overlays, titles, freeze holds, speed ramps, and muxed export.
+- An experimental `GAPSmartTimelinePlanner` node that compiles mixed-mode t2v, i2v, v2v, and first/last-frame manifests before you wire the render lanes.
+- An experimental `GAPSmartTimelineSupervisor` node that tracks which smart-timeline assembly slots are still missing rendered clips.
+- An experimental `GAPSmartTimelineAssembler` node that stitches pre-rendered smart-timeline segments back into one clip using the planner manifest.
 - Safer media-loading routes and more resilient workflow behavior around missing or invalid source files.
 - PromptRelay budget guards for large LTX 2.3 timeline jobs, including early matrix-size estimates for video and audio attention masks.
 - A one-click installer path that sets up the bundled LTX 2.3 workflows instead of leaving model and dependency wiring to the user.
@@ -62,6 +75,9 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 ### Timeline And Guide Tools
 
 - `GAPDirector`: visual prompt timeline editor.
+- `GAPSmartTimelinePlanner`: mixed-mode manifest compiler for t2v, i2v, v2v, and first/last-frame shot planning.
+- `GAPSmartTimelineSupervisor`: slot-completion checker for rendered smart-timeline segment clips.
+- `GAPSmartTimelineAssembler`: assembles pre-rendered smart-timeline segment clips into one editorial timeline.
 - `GAPDirectorGuide`: guide-image application node for timeline data.
 - `GAPSequencer`: guide-frame sequencing across a latent timeline.
 - `GAPKeyframer`: in-place frame replacement for keyframe workflows.
@@ -91,6 +107,8 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
   A single loaded clip feeds `GAPClipEditor` and then `GAPVideoExporter` for trim, retime, loop, and fade workflows.
 - `example_workflows/Geekatplay Video Editor Suite - Full Edit Chain.json`
   Two source clips feed `GAPTransitionComposer`, then `GAPClipEditor`, then `GAPMotionTextFX`, then `GAPVideoExporter` for a longer editorial stack.
+- `example_workflows/Geekatplay Video Editor Suite - Smart Timeline Planner.json`
+  A mixed-mode planning canvas that compiles t2v, i2v, v2v, and first/last-frame segment manifests, then feeds the normalized plan into `GAPSmartTimelineAssembler` for stitching pre-rendered segment clips.
 - `example_workflows/Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`
   A compatibility-safe Director hub built from the fully expanded `LTX Director Example Workflow (Fixed)` canvas, with an in-canvas note that points you to the companion first/last-frame, custom-audio, and lip-sync workflows.
 - `example_workflows/Geekatplay Video Editor Suite - LipSync GAP Bridge.json`
@@ -110,6 +128,8 @@ Geekatplay Video Editor Suite is a dedicated ComfyUI package for clip loading, t
 
 ![Full Edit Chain Preview](docs/assets/full-edit-chain.gif)
 
+`Full Edit Chain` is an editorial example, not a text-to-video workflow. `GAPMotionTextFX` only burns overlay text onto the edited frames; it does not steer generation from a prompt. Use `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` or `GAPDirector` when you want prompt-driven generation.
+
 ## Workflow Starting Points
 
 - If you only want editorial tools, start with the four Geekatplay editor/export demo workflows. They do not need checkpoints, VAEs, or text encoders.
@@ -124,6 +144,14 @@ The current fork already exposes most of the practical LTX 2.3 workflow surface:
 
 - Text to video:
   Use `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json` or `GAPDirector` directly for timeline-driven prompt changes, then fall back to the smaller bundled LTX examples when you want a narrower canvas.
+- Mixed-mode planning:
+  Use `GAPSmartTimelinePlanner` when you want one manifest that mixes t2v, i2v, v2v, and first/last-frame shots. It validates and normalizes mixed segments, exports Director-compatible data only when every segment can map to `GAPDirector`, and annotates assembly slots for `GAPSmartTimelineAssembler`.
+- Lane export contracts:
+  The planner now also writes `timeline_plan.lane_exports` and `timeline_plan.render_queue`, so mixed timelines emit direct handoff contracts for Director shots, guide-video shots, and first/last-frame shots instead of leaving those branches as plain notes.
+- Mixed-mode supervision:
+  Use `GAPSmartTimelineSupervisor` between planning and assembly when you want a quick answer to "which rendered segment slots are still missing" before you run `GAPSmartTimelineAssembler`.
+- Mixed-mode assembly:
+  Use `GAPSmartTimelineAssembler` after you render each segment clip through its own lane. It consumes the planner manifest, places the segment clips in plan order, optionally preserves timeline gaps, and emits one stitched clip with audio.
 - Image to video:
   Use the companion `LTX I2V First Last Frame` workflows, or `GAPDirector` with guide-image timeline segments or `GAPSequencer` plus `GAPMultiImageLoader` for first-frame, last-frame, and multi-keyframe guide workflows.
 - Video to video:

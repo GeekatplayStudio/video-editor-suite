@@ -1,0 +1,280 @@
+{
+  "id": "e1fcb3a1-2f7d-4c6d-9a59-b1d14c308f6a",
+  "revision": 0,
+  "last_node_id": 4,
+  "last_link_id": 2,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        60,
+        40
+      ],
+      "size": [
+        460,
+        300
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Geekatplay Smart Timeline Planner",
+      "properties": {},
+      "widgets_values": [
+        "1. Use this workflow to draft one JSON manifest for mixed-mode shots.\n2. Supported planning modes are t2v, i2v, v2v, and fflf.\n3. The planner normalizes durations, validates assets, and emits lane contracts in `timeline_plan.lane_exports`.\n4. Render each planned segment through its own lane, then connect those clips to Smart Timeline Supervisor and watch `missing_image_slots`.\n5. When the supervisor says assembly is ready, pass the same plan to Smart Timeline Assembler and connect the rendered clips to `images_1` / `audio_1`, `images_2` / `audio_2`, and so on.\n6. v2v and fflf still need dedicated render lanes before assembly.\n7. Use the assembler summary to confirm gap handling and slot order before moving into transitions, overlays, or export."
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 2,
+      "type": "GAPSmartTimelinePlanner",
+      "pos": [
+        540,
+        60
+      ],
+      "size": [
+        430,
+        520
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "timeline_json_input",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "timeline_plan",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "director_timeline_data",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "local_prompts",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "segment_lengths",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "guide_strength",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "segment_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "duration_frames",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "duration_seconds",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
+        "Node name for S&R": "GAPSmartTimelinePlanner"
+      },
+      "widgets_values": [
+        "{\n  \"defaults\": {\n    \"width\": 768,\n    \"height\": 512,\n    \"duration_seconds\": 2.0,\n    \"guide_strength\": 0.85\n  },\n  \"segments\": [\n    {\n      \"mode\": \"t2v\",\n      \"prompt\": \"wide establishing shot of a rainy neon street\",\n      \"duration_seconds\": 2.0\n    },\n    {\n      \"mode\": \"i2v\",\n      \"prompt\": \"camera pushes into the storefront\",\n      \"image\": \"reference_storefront.png\",\n      \"duration_seconds\": 2.0,\n      \"guide_strength\": 0.9\n    },\n    {\n      \"mode\": \"v2v\",\n      \"prompt\": \"keep the dancer silhouette and amplify stage lighting\",\n      \"video\": \"guide_dancer.mp4\",\n      \"duration_seconds\": 2.0\n    },\n    {\n      \"mode\": \"fflf\",\n      \"prompt\": \"sunrise over the canyon\",\n      \"first_frame\": \"canyon_start.png\",\n      \"last_frame\": \"canyon_end.png\",\n      \"duration_seconds\": 2.0\n    }\n  ]\n}",
+        24,
+        768,
+        512,
+        2,
+        false
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 3,
+      "type": "GAPSmartTimelineSupervisor",
+      "pos": [
+        1040,
+        100
+      ],
+      "size": [
+        420,
+        300
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "timeline_plan_input",
+          "type": "STRING",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "timeline_plan",
+          "type": "STRING",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "missing_image_slots",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "missing_audio_slots",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "next_missing_slot",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "ready_to_assemble",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "image_completion_ratio",
+          "type": "FLOAT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
+        "Node name for S&R": "GAPSmartTimelineSupervisor"
+      },
+      "widgets_values": [
+        "{}"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 4,
+      "type": "GAPSmartTimelineAssembler",
+      "pos": [
+        1540,
+        100
+      ],
+      "size": [
+        420,
+        320
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "timeline_plan_input",
+          "type": "STRING",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": null
+        },
+        {
+          "name": "duration",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-geekatplay-video-editor-suite",
+        "ver": "3b65410c1ce684663a3dfa6fb073588c35275d83",
+        "Node name for S&R": "GAPSmartTimelineAssembler"
+      },
+      "widgets_values": [
+        "{}",
+        24,
+        "planner defaults",
+        "trim gaps",
+        "hold last"
+      ],
+      "color": "#222",
+      "bgcolor": "#000"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "STRING"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9085173501577287,
+      "offset": [
+        68.07216575611864,
+        31.377901945706033
+      ]
+    }
+  },
+  "version": 0.4
+}

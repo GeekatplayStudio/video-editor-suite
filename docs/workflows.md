@@ -54,6 +54,8 @@ Requirements:
 Purpose:
 Two source clips are transitioned together, refined with `GAPClipEditor`, styled with `GAPMotionTextFX`, and exported with `GAPVideoExporter`.
 
+This workflow is editorial only. `GAPMotionTextFX` overlays captions or titles on the existing frames; it does not send a text prompt into a video-generation model.
+
 Use this workflow when:
 - You want one example that demonstrates the longer editorial chain.
 - You want to trim or retime after the transition instead of before it.
@@ -61,6 +63,23 @@ Use this workflow when:
 
 Requirements:
 - No extra checkpoints, VAEs, or text encoders are required.
+
+### `Geekatplay Video Editor Suite - Smart Timeline Planner.json`
+
+Purpose:
+Provides a mixed-mode planning and assembly scratchpad for drafting one manifest across t2v, i2v, v2v, and first/last-frame shots, then feeding that manifest into `GAPSmartTimelineAssembler`.
+
+Use this workflow when:
+- You want one place to normalize prompts, durations, seeds, and asset references for a mixed-mode project.
+- You want the node to tell you whether the whole manifest can map into `GAPDirector` directly.
+- You want a lightweight debugging canvas before building a larger orchestration workflow.
+- You want a visible place to stitch the already rendered segment clips back together in planner order.
+- You want per-lane shot contracts inside `timeline_plan.lane_exports` so the render branches are easier to wire.
+- You want a supervisor stage that reports which assembly slots are still missing rendered segment clips.
+
+Requirements:
+- No checkpoints are required just to plan the manifest.
+- This first version does not render the mixed segments by itself; it validates and compiles the plan, then assembles pre-rendered segment clips you connect manually.
 
 ### `Geekatplay Video Editor Suite - LTX 2.3 Director Lab.json`
 

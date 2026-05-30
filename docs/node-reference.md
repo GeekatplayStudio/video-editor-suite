@@ -32,6 +32,109 @@ How to use it:
 - Use the timeline blocks for local prompt changes, insert points, and guide strength changes.
 - Feed `guide_data` into `GAPDirectorGuide` when the workflow needs guide frames applied to a latent.
 
+### `GAPSmartTimelinePlanner`
+
+Compiles a mixed-mode shot manifest into a normalized plan before you wire the actual render lanes.
+
+Use it when:
+- You want one planning surface that mixes text-to-video, image-to-video, video-to-video, and first/last-frame shots.
+- You want durations, frame ranges, prompts, seeds, and asset references normalized before you build a larger workflow.
+- You want to know whether the whole manifest can collapse into `GAPDirector` today or whether some segments still need dedicated v2v or first/last-frame branches.
+
+Important controls:
+- `timeline_json` is the source manifest. It accepts either a top-level object with `defaults` and `segments`, or a raw array of segment objects.
+- `frame_rate`, `default_width`, `default_height`, and `default_segment_seconds` supply fallback values when the JSON omits them.
+- `strict_validation` switches between note-only planning and hard validation failures.
+- `timeline_json_input` lets another node feed the manifest in as a string.
+
+Outputs:
+- `timeline_plan` is the normalized JSON manifest with frame ranges, execution lanes, validation notes per segment, plus grouped `lane_exports` and a flat `render_queue` for downstream render lanes.
+- `director_timeline_data`, `local_prompts`, `segment_lengths`, and `guide_strength` are only populated when every segment is compatible with `GAPDirector` today.
+- `summary` is a human-readable routing report intended for quick debugging inside ComfyUI.
+
+Behavior note:
+- `t2v` and `i2v` segments can be compiled into `GAPDirector`-compatible timeline data.
+- `v2v` and `fflf` segments are planned and validated here, but this first version does not render them internally; they still need their own guide-video or first/last-frame lane downstream.
+- The normalized plan also includes `assembly_slot` per segment plus top-level `assembly_export_ready` metadata for `GAPSmartTimelineAssembler`.
+- `timeline_plan.lane_exports.director_shots`, `guide_video_shots`, and `first_last_frame_shots` are standalone shot contracts intended to be rendered individually and then sent into `GAPSmartTimelineAssembler`.
+
+Minimal manifest example:
+
+```json
+{
+	"defaults": {
+		"width": 768,
+		"height": 512,
+		"duration_seconds": 2.0,
+		"guide_strength": 0.85
+	},
+	"segments": [
+		{
+			"mode": "t2v",
+			"prompt": "wide establishing shot of a rainy neon street"
+		},
+		{
+			"mode": "i2v",
+			"prompt": "camera pushes into the storefront",
+			"image": "reference_storefront.png"
+		},
+		{
+			"mode": "v2v",
+			"prompt": "keep the dancer silhouette and amplify stage lighting",
+			"video": "guide_dancer.mp4"
+		},
+		{
+			"mode": "fflf",
+			"prompt": "sunrise over the canyon",
+			"first_frame": "canyon_start.png",
+			"last_frame": "canyon_end.png"
+		}
+	]
+}
+```
+
+### `GAPSmartTimelineAssembler`
+
+Stitches pre-rendered smart-timeline segment clips back into one editorial clip using the normalized planner manifest.
+
+Use it when:
+- You already rendered each segment through its own t2v, i2v, v2v, or first/last-frame lane.
+- You want one node to place those clips in planned order and preserve or trim any intentional gaps.
+- You want a lightweight assembly stage before you move into transitions, overlays, or export.
+
+Important controls:
+- `timeline_plan` should come from `GAPSmartTimelinePlanner` `timeline_plan` whenever possible.
+- `resize_mode` decides whether all assembled clips should match the planner defaults or the first connected segment clip.
+- `gap_policy` decides whether planned gaps are removed, filled with black frames, or filled by holding the previous frame.
+- `segment_fit` decides how clips are stretched to the planned segment length when the rendered clip is shorter than expected.
+- `images_1` / `audio_1` through `images_12` / `audio_12` are ordered assembly slots. Slot `n` corresponds to planner segment `assembly_slot=n`.
+
+Behavior note:
+- This node assembles clips sequentially in planner order. It does not layer or overlap segments; for overlapping editorial effects, move the stitched output into `GAPLayerComposer` or `GAPTransitionComposer` afterward.
+- Audio gaps are filled with silence even when `gap_policy` holds the previous frame visually.
+- The current node supports up to 12 segments per assembly pass.
+
+### `GAPSmartTimelineSupervisor`
+
+Checks a smart-timeline plan against the currently connected rendered segment clips so you can see which assembly slots are still missing.
+
+Use it when:
+- You already have `timeline_plan` from `GAPSmartTimelinePlanner` and want a quick readiness check before assembly.
+- You want to know which `images_n` slots are still blocking `GAPSmartTimelineAssembler`.
+- You want audio coverage reported separately, without treating missing audio as a hard block.
+
+Important controls:
+- `timeline_plan` or `timeline_plan_input` should come from `GAPSmartTimelinePlanner`.
+- `images_1` / `audio_1` through `images_12` / `audio_12` are checked against planner `assembly_slot` values.
+
+Outputs:
+- `timeline_plan` passes the manifest through unchanged so it can continue into `GAPSmartTimelineAssembler`.
+- `summary` lists each slot, whether image and audio clips are connected, and whether assembly is ready.
+- `missing_image_slots` and `missing_audio_slots` are comma-separated slot lists for quick debugging.
+- `next_missing_slot` points at the first missing image slot.
+- `ready_to_assemble` is `1` only when all required image slots are connected and the planner says assembly is export-ready.
+- `image_completion_ratio` reports how many planned image slots are already filled.
+
 ### `GAPDirectorGuide`
 
 Applies `guide_data` from `GAPDirector` to positive conditioning, negative conditioning, and a latent.
